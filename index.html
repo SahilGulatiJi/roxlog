@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="HYROX training tracker - 37-week plan to HYROX Bengaluru, with session logging, station loads and movement standards.">
+<meta name="description" content="HYROX training tracker - 37-week plan to HYROX Bengaluru, with session logging, station loads, movement standards and body measurements.">
 <meta name="theme-color" content="#EEEFEA" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#131519" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -236,6 +236,51 @@ input[type=range]{width:100%;accent-color:var(--accent);}
 .settings-row .t b{display:block;font-size:.88rem;font-weight:700;}
 .settings-row .t span{font-size:.76rem;color:var(--muted);}
 
+/* ---------- log detail ---------- */
+.entry{cursor:pointer;}
+.entry.open{background:var(--surface-2);}
+.edetail{padding:0 16px 16px;border-bottom:1px solid var(--line);background:var(--surface-2);display:flex;flex-direction:column;gap:14px;}
+.edetail h5{margin:0;font-size:.6rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);font-family:Archivo,sans-serif;}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(78px,1fr));gap:8px;}
+.dcell{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:9px 10px;display:flex;flex-direction:column;gap:2px;}
+.dcell .k{font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.dcell .v{font-family:"JetBrains Mono",monospace;font-size:1rem;font-weight:700;color:var(--ink);}
+.dcell .v small{font-size:.6rem;color:var(--muted);font-weight:400;}
+.dlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;}
+.dlist li{display:grid;grid-template-columns:auto 1fr;gap:9px;font-size:.85rem;color:var(--ink-2);line-height:1.4;align-items:start;}
+.dlist li .tick{font-family:"JetBrains Mono",monospace;font-size:.8rem;color:var(--accent);}
+.dlist li.no .tick{color:var(--line-2);}
+.dlist li.no{color:var(--muted);}
+.dtable{width:100%;min-width:0;border-collapse:collapse;font-size:.82rem;}
+.dtable td{padding:6px 8px;border-bottom:1px solid var(--line);}
+.dtable tr:last-child td{border-bottom:0;}
+.dtable td:first-child{font-weight:600;}
+.dtable td.n{font-family:"JetBrains Mono",monospace;text-align:right;white-space:nowrap;color:var(--accent-ink);}
+.dnote{background:var(--surface);border-left:2px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 12px;font-size:.85rem;color:var(--ink-2);line-height:1.45;}
+
+/* ---------- body ---------- */
+.bodywrap{position:relative;padding:8px 0 4px;}
+.bodywrap svg{width:100%;max-width:330px;margin:0 auto;display:block;height:auto;}
+.bfig{fill:var(--surface-2);stroke:var(--line-2);stroke-width:1.6;stroke-linejoin:round;}
+.bline{stroke:var(--accent);stroke-width:1.4;stroke-dasharray:3 2.5;opacity:.75;}
+.btick{stroke:var(--accent);stroke-width:2.2;stroke-linecap:round;}
+.mfield{display:flex;flex-direction:column;gap:3px;}
+.mfield label{font-size:.55rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);}
+.mfield input{padding:7px 8px;font-size:.85rem;text-align:center;border-radius:6px;}
+.mfield input.has{border-color:var(--accent);background:var(--accent-soft);}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:9px;}
+.bfout{display:flex;gap:10px;flex-wrap:wrap;}
+.bfout .dcell{flex:1 1 96px;}
+.msnap{display:grid;grid-template-columns:auto 1fr auto auto;gap:2px 12px;padding:12px 16px;border-bottom:1px solid var(--line);align-items:center;}
+.msnap:last-child{border-bottom:0;}
+.msnap .when{font-family:"JetBrains Mono",monospace;font-size:.7rem;color:var(--muted);text-align:center;line-height:1.25;}
+.msnap .when b{display:block;font-size:1.05rem;color:var(--ink);font-weight:700;}
+.msnap .mm{font-size:.78rem;color:var(--muted);font-family:"JetBrains Mono",monospace;}
+.msnap .big{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:1.02rem;}
+.delta{font-family:"JetBrains Mono",monospace;font-size:.75rem;font-weight:700;}
+.delta.dn{color:var(--accent-ink);}
+.delta.up{color:var(--flag);}
+
 /* ---------- moves ---------- */
 .moves{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;}
 .move{background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden;cursor:pointer;text-align:left;padding:0;width:100%;font-family:inherit;color:inherit;box-shadow:var(--shadow);}
@@ -354,6 +399,7 @@ details.fold .fbody{padding:12px;}
               <div class="field"><label class="lbl" for="f-hrmax">Max BPM</label><input type="number" id="f-hrmax" min="40" max="230" inputmode="numeric" placeholder="0"></div>
               <div class="field"><label class="lbl" for="f-kcal">Calories</label><input type="number" id="f-kcal" min="0" max="3000" inputmode="numeric" placeholder="0"></div>
             </div>
+            <p id="f-kcalhint" style="font-size:.78rem;color:var(--muted);margin:9px 0 0;line-height:1.45;" hidden></p>
             <p style="font-size:.74rem;color:var(--muted);margin-top:9px;line-height:1.45;">Read these off the Apple Watch workout summary. A web page cannot pull them from Apple Health directly &mdash; see More &rarr; Apple Watch for why, and what the automated route would take.</p>
           </div>
         </details>
@@ -397,7 +443,17 @@ details.fold .fbody{padding:12px;}
   <div class="view" id="v-prog">
     <h2>Progress</h2>
     <p class="sub">Everything here is computed from what you logged.</p>
-    <div class="stats" style="margin-top:14px;" id="p-stats"></div>
+
+    <div class="section-head" style="margin-top:18px;"><span class="lbl">Body</span><span class="hr"></span>
+      <button class="btn primary sm" id="b-add">Log measurements</button></div>
+    <div class="card"><div id="b-summary"></div></div>
+    <div class="card" id="b-chartcard" hidden>
+      <div class="chartwrap"><svg class="chart" id="b-chart" role="img" aria-label="Weight and waist over time"></svg></div>
+      <p class="chart-cap" id="b-chartcap"></p>
+    </div>
+
+    <div class="section-head"><span class="lbl">Training</span><span class="hr"></span></div>
+    <div class="stats" id="p-stats"></div>
 
     <div class="section-head"><span class="lbl">Weekly minutes</span><span class="hr"></span></div>
     <div class="card">
@@ -430,6 +486,11 @@ details.fold .fbody{padding:12px;}
     <div class="card" style="margin-top:14px;">
       <div class="settings-row">
         <div class="t"><b>Where your data lives</b><span id="s-syncdesc">&mdash;</span></div>
+      </div>
+      <div class="settings-row">
+        <div class="t"><b>Your height and sex</b><span>Only used to work out body-fat percentage from your neck and waist.</span></div>
+        <input type="number" id="s-height" min="100" max="230" inputmode="numeric" placeholder="cm" style="width:78px;text-align:center;">
+        <select id="s-sex" style="width:96px;"><option value="m">Male</option><option value="f">Female</option></select>
       </div>
       <div class="settings-row">
         <div class="t"><b>Export a backup</b><span>Downloads every session as a JSON file. Do this monthly.</span></div>
@@ -501,6 +562,37 @@ details.fold .fbody{padding:12px;}
       <p style="margin:0 0 10px;">SkiErg <b class="mono">1000&nbsp;m</b> &middot; Sled push <b class="mono">152&nbsp;kg</b> incl. sled &middot; Sled pull <b class="mono">103&nbsp;kg</b> incl. sled &middot; Burpee broad jump <b class="mono">80&nbsp;m</b> &middot; Row <b class="mono">1000&nbsp;m</b> &middot; Farmers carry <b class="mono">200&nbsp;m @ 2&times;24&nbsp;kg</b> &middot; Sandbag lunge <b class="mono">100&nbsp;m @ 20&nbsp;kg</b> &middot; Wall balls <b class="mono">100 &times; 6&nbsp;kg</b> to a <b class="mono">3.05&nbsp;m</b> target.</p>
       <p style="margin:0;color:var(--muted);font-size:.82rem;">Some training sites list Open sled push as 102&nbsp;kg &mdash; that is the <em>women's</em> Open figure. Men's Open is 152&nbsp;kg. Source: HYROX Season 26/27 Singles Rulebook.</p>
     </div></div>
+  </div>
+
+  <div class="sheet" id="bsheet" role="dialog" aria-modal="true" aria-labelledby="bs-title">
+    <div class="scrim" data-bclose></div>
+    <div class="panel">
+      <div class="grab"></div>
+      <div class="phead">
+        <div><h3 id="bs-title">Measurements</h3><span class="sub" id="bs-sub">Same day of the week, same time, before breakfast.</span></div>
+        <button class="close" data-bclose aria-label="Close">&times;</button>
+      </div>
+      <div class="pbody">
+        <div class="fields">
+          <div class="field"><label class="lbl" for="b-date">Date</label><input type="date" id="b-date"></div>
+          <div class="field"><label class="lbl" for="b-wt">Weight kg</label><input type="number" id="b-wt" step="0.1" min="20" max="250" inputmode="decimal" placeholder="0"></div>
+        </div>
+
+        <div class="bodywrap" id="b-figure"></div>
+
+        <div class="bfout" id="b-derived"></div>
+
+        <div class="field">
+          <label class="lbl" for="b-notes">Notes</label>
+          <textarea id="b-notes" placeholder="Anything worth remembering about this one"></textarea>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;padding-bottom:8px;">
+          <button class="btn primary" id="b-save">Save measurements</button>
+          <button class="btn ghost" data-bclose>Cancel</button>
+        </div>
+        <p style="font-size:.76rem;color:var(--muted);line-height:1.5;padding-bottom:8px;">All in centimetres, and you only need the ones you care about. Waist is measured at the navel, hips at the widest point, biceps flexed at the peak. Measure the same side and the same spot every time &mdash; consistency matters far more than accuracy.</p>
+      </div>
+    </div>
   </div>
 
   <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-title">
@@ -950,18 +1042,18 @@ function fmt(d,opt){return d.toLocaleDateString("en-GB",opt||{day:"numeric",mont
 function todayISO(){return iso(new Date());}
 
 /* ---------- state ---------- */
-var state={v:1,sessions:[]};
+var state={v:1,sessions:[],measures:[]};
 var sync={mode:"local",api:null,busy:false};
 
 function loadSeed(){
   try{
     var el=document.getElementById("seed-data");
-    if(el&&el.textContent.trim()){var s=JSON.parse(el.textContent);if(s&&Array.isArray(s.sessions))return s;}
+    if(el&&el.textContent.trim()){var s=JSON.parse(el.textContent);if(s&&Array.isArray(s.sessions)){s.measures=s.measures||[];return s;}}
   }catch(e){}
   return null;
 }
 function loadLocal(){
-  try{var raw=localStorage.getItem(LS_KEY);if(raw){var s=JSON.parse(raw);if(s&&Array.isArray(s.sessions))return s;}}catch(e){}
+  try{var raw=localStorage.getItem(LS_KEY);if(raw){var s=JSON.parse(raw);if(s&&Array.isArray(s.sessions)){s.measures=s.measures||[];return s;}}}catch(e){}
   return null;
 }
 function saveLocal(){try{localStorage.setItem(LS_KEY,JSON.stringify(state));}catch(e){}}
@@ -1014,44 +1106,90 @@ function gsStatus(msg,bad){
   el.style.background=bad?"var(--flag-soft)":"var(--accent-soft)";
   el.innerHTML='<b style="color:'+(bad?"var(--flag)":"var(--accent-ink)")+'">'+(bad?"Problem":"Sheet")+'</b>'+msg;
 }
-// POST as text/plain so the browser sends no CORS preflight — Apps Script cannot answer OPTIONS.
-function gsPost(payload){
+// Apps Script does not reliably attach CORS headers to POST responses, so a
+// browser POST can be blocked even when the script is perfectly healthy — which
+// is why "connect" (a GET) can succeed while saves silently fail. Every write
+// therefore tries POST first and falls back to GET with the payload in the query
+// string, which Apps Script and the browser both allow.
+function gsCheck_(res){
+  if(!res||!res.ok)throw new Error((res&&res.error)||"the sheet rejected that");
+  return res;
+}
+function gsPostRaw_(action,data){
   return fetch(gs.url,{
     method:"POST",redirect:"follow",
     headers:{"Content-Type":"text/plain;charset=utf-8"},
-    body:JSON.stringify(Object.assign({token:gs.token},payload))
-  }).then(function(r){return r.json();});
+    body:JSON.stringify(Object.assign({token:gs.token,action:action},data||{}))
+  }).then(function(r){return r.json();}).then(gsCheck_);
 }
-function gsGet(){
-  var u=gs.url+(gs.url.indexOf("?")>-1?"&":"?")+"token="+encodeURIComponent(gs.token)+"&t="+Date.now();
-  return fetch(u,{method:"GET",redirect:"follow"}).then(function(r){return r.json();});
+function gsGetRaw_(action,data){
+  var u=gs.url+"?token="+encodeURIComponent(gs.token)+"&action="+encodeURIComponent(action)+"&t="+Date.now();
+  if(data)u+="&payload="+encodeURIComponent(JSON.stringify(data));
+  return fetch(u,{method:"GET",redirect:"follow"}).then(function(r){return r.json();}).then(gsCheck_);
 }
-function gsPushSessions(list){
-  if(!gs.on||!gs.url||!list.length)return Promise.resolve();
-  gs.busy=true;setSyncChip("Saving","busy");
-  return gsPost({action:"upsert",sessions:list}).then(function(res){
-    gs.busy=false;
-    if(res&&res.ok){setSyncChip("Sheet","on");}
-    else{setSyncChip("Sheet offline","");gsStatus((res&&res.error)||"the sheet rejected that write.",true);}
-  }).catch(function(){
-    gs.busy=false;setSyncChip("Sheet offline","");
+function gsCall(action,data){
+  return gsPostRaw_(action,data).catch(function(err){
+    // a rejected token is a real answer, not a transport failure — do not retry
+    if(/token/i.test(err&&err.message||""))throw err;
+    return gsGetRaw_(action,data);
   });
 }
-function gsDelete(ids){
-  if(!gs.on||!gs.url||!ids.length)return Promise.resolve();
-  return gsPost({action:"delete",ids:ids}).catch(function(){});
+// GET urls have a length ceiling, so large pushes go up in batches.
+function chunk_(list,budget){
+  var out=[],cur=[],size=0;
+  (list||[]).forEach(function(item){
+    var n=JSON.stringify(item).length;
+    if(cur.length&&size+n>budget){out.push(cur);cur=[];size=0;}
+    cur.push(item);size+=n;
+  });
+  if(cur.length)out.push(cur);
+  return out;
+}
+function gsUpsert(sessions,measures){
+  var batches=chunk_(sessions||[],3500).map(function(b){return {sessions:b};})
+    .concat(chunk_(measures||[],3500).map(function(b){return {measures:b};}));
+  if(!batches.length)return Promise.resolve({ok:true,appended:0,updated:0});
+  var tot={appended:0,updated:0};
+  return batches.reduce(function(p,b){
+    return p.then(function(){
+      return gsCall("upsert",b).then(function(r){
+        tot.appended+=(r.appended||0);tot.updated+=(r.updated||0);
+      });
+    });
+  },Promise.resolve()).then(function(){return {ok:true,appended:tot.appended,updated:tot.updated};});
+}
+function gsPushSessions(list){
+  if(!gs.on||!gs.url||!list||!list.length)return Promise.resolve();
+  gs.busy=true;setSyncChip("Saving","busy");
+  return gsUpsert(list,null).then(function(){
+    gs.busy=false;setSyncChip("Sheet","on");
+  }).catch(function(err){
+    gs.busy=false;setSyncChip("Sheet offline","");
+    gsStatus("that save did not reach the sheet ("+(err&&err.message||"network")+"). It is safe in this browser &mdash; reload once you are back online and it will go up.",true);
+  });
+}
+function gsPushMeasures(list){
+  if(!gs.on||!gs.url||!list||!list.length)return Promise.resolve();
+  gs.busy=true;setSyncChip("Saving","busy");
+  return gsUpsert(null,list).then(function(){
+    gs.busy=false;setSyncChip("Sheet","on");
+  }).catch(function(){gs.busy=false;setSyncChip("Sheet offline","");});
+}
+function gsDelete(ids,measureIds){
+  if(!gs.on||!gs.url)return Promise.resolve();
+  if(!(ids&&ids.length)&&!(measureIds&&measureIds.length))return Promise.resolve();
+  return gsCall("delete",{ids:ids||[],measureIds:measureIds||[]}).catch(function(){});
 }
 function gsPull(){
-  return gsGet().then(function(res){
-    if(!res||!res.ok)throw new Error((res&&res.error)||"bad response");
-    return res.sessions||[];
+  return gsCall("list").then(function(res){
+    return {sessions:res.sessions||[],measures:res.measures||[]};
   });
 }
 function stamp(s){s.updatedAt=new Date().toISOString();return s;}
 
 /* ---------- boot sync ---------- */
 function boot(){
-  gsLoad();
+  gsLoad();profLoad();bindProfile();
   var seed=loadSeed(), local=loadLocal();
   state = seed && seed.sessions.length ? seed : (local || seed || {v:1,sessions:[]});
   render();
@@ -1065,15 +1203,18 @@ function boot(){
     setSyncChip("Sheet","busy");
     desc.textContent="Synced to your Google Sheet, and cached in this browser so it still works offline.";
     gsPull().then(function(remote){
-      var before=state.sessions.slice();
-      state=merge(state,{sessions:remote});
+      var beforeS=state.sessions.slice(), beforeM=(state.measures||[]).slice();
+      state=merge(state,remote);
       saveLocal();render();
       setSyncChip("Sheet","on");
-      gsStatus(remote.length+" session"+(remote.length===1?"":"s")+" in the sheet.",false);
-      // push anything this device has that the sheet does not
-      var have={};remote.forEach(function(r){have[r.id]=r.updatedAt||"";});
-      var missing=before.filter(function(x){return !(x.id in have)||((x.updatedAt||"")>have[x.id]);});
-      if(missing.length)gsPushSessions(missing);
+      gsStatus(remote.sessions.length+" session"+(remote.sessions.length===1?"":"s")+
+        (remote.measures.length?" and "+remote.measures.length+" measurement set"+(remote.measures.length===1?"":"s"):"")+" in the sheet.",false);
+      var behind=function(local,rows){
+        var have={};rows.forEach(function(r){have[r.id]=r.updatedAt||"";});
+        return local.filter(function(x){return !(x.id in have)||((x.updatedAt||"")>have[x.id]);});
+      };
+      var mS=behind(beforeS,remote.sessions), mM=behind(beforeM,remote.measures);
+      if(mS.length||mM.length)gsUpsert(mS,mM).catch(function(){});
     }).catch(function(err){
       setSyncChip("Sheet offline","");
       gsStatus("could not reach the sheet ("+(err&&err.message||"network")+"). Working from this browser's copy; it will sync when you reconnect.",true);
@@ -1101,6 +1242,13 @@ function boot(){
   }).catch(function(){setSyncChip("This device","");});
 }
 
+function bindProfile(){
+  var h=document.getElementById("s-height"), x=document.getElementById("s-sex");
+  if(!h)return;
+  h.value=prof.height||""; x.value=prof.sex;
+  h.addEventListener("input",function(){prof.height=parseFloat(h.value)||0;profSave();renderDerived();renderBody();});
+  x.addEventListener("change",function(){prof.sex=x.value;profSave();renderBodySheet(editingMeasure);renderBody();});
+}
 function bindSheetUI(){
   var u=document.getElementById("g-url"), t=document.getElementById("g-token");
   if(!u)return;
@@ -1115,9 +1263,10 @@ function bindSheetUI(){
       return;
     }
     gsStatus("testing…",false);
-    gsPull().then(function(rows){
+    gsPull().then(function(remote){
+      var rows=remote.sessions;
       gs.on=true;gsSave();
-      state=merge(state,{sessions:rows});saveLocal();render();
+      state=merge(state,remote);saveLocal();render();
       setSyncChip("Sheet","on");
       gsStatus("connected. "+rows.length+" session"+(rows.length===1?"":"s")+" already in the sheet. Hit <b>Push all up</b> to send this device's log across.",false);
       document.getElementById("s-syncdesc").textContent="Synced to your Google Sheet, and cached in this browser so it still works offline.";
@@ -1134,19 +1283,21 @@ function bindSheetUI(){
   document.getElementById("g-push").addEventListener("click",function(){
     if(!gs.on){gsStatus("connect first.",true);return;}
     var all=state.sessions.map(function(x){return x.updatedAt?x:stamp(x);});
+    var allM=(state.measures||[]).map(function(x){return x.updatedAt?x:stamp(x);});
     saveLocal();
-    gsStatus("pushing "+all.length+"…",false);
-    gsPost({action:"upsert",sessions:all}).then(function(res){
-      if(res&&res.ok)gsStatus("pushed. "+(res.appended||0)+" added, "+(res.updated||0)+" updated in the sheet.",false);
-      else gsStatus((res&&res.error)||"the sheet rejected that.",true);
+    gsStatus("pushing "+all.length+" session"+(all.length===1?"":"s")+(allM.length?" and "+allM.length+" measurement set"+(allM.length===1?"":"s"):"")+"…",false);
+    gsUpsert(all,allM).then(function(res){
+      gsStatus("pushed. "+(res.appended||0)+" added, "+(res.updated||0)+" updated in the sheet.",false);
+      setSyncChip("Sheet","on");
     }).catch(function(e){gsStatus("push failed ("+e.message+").",true);});
   });
   document.getElementById("g-pull").addEventListener("click",function(){
     if(!gs.on){gsStatus("connect first.",true);return;}
     gsStatus("pulling…",false);
-    gsPull().then(function(rows){
-      state=merge(state,{sessions:rows});saveLocal();render();
-      gsStatus("pulled "+rows.length+" from the sheet and merged.",false);
+    gsPull().then(function(remote){
+      state=merge(state,remote);saveLocal();render();
+      gsStatus("pulled "+remote.sessions.length+" session"+(remote.sessions.length===1?"":"s")+
+        (remote.measures.length?" and "+remote.measures.length+" measurement set"+(remote.measures.length===1?"":"s"):"")+" and merged.",false);
     }).catch(function(e){gsStatus("pull failed ("+e.message+").",true);});
   });
   var openLink=document.getElementById("g-open");
@@ -1174,25 +1325,29 @@ function bindSheetUI(){
   });
 }
 
-function merge(a,b){
+function mergeList(a,b){
   var by={};
-  (a.sessions||[]).concat(b.sessions||[]).forEach(function(s){
-    if(!s||!s.id)return;
-    var cur=by[s.id];
-    if(!cur){by[s.id]=s;return;}
-    // last write wins; a row with no stamp loses to one that has one
-    var cs=cur.updatedAt||"", ns=s.updatedAt||"";
-    if(ns>cs)by[s.id]=s;
+  (a||[]).concat(b||[]).forEach(function(x){
+    if(!x||!x.id)return;
+    var cur=by[x.id];
+    if(!cur){by[x.id]=x;return;}
+    if((x.updatedAt||"")>(cur.updatedAt||""))by[x.id]=x;
   });
   var out=Object.keys(by).map(function(k){return by[k];});
   out.sort(function(x,y){return x.date<y.date?1:x.date>y.date?-1:0;});
-  return {v:1,sessions:out};
+  return out;
+}
+function merge(a,b){
+  return {v:1,
+    sessions:mergeList(a&&a.sessions,b&&b.sessions),
+    measures:mergeList(a&&a.measures,b&&b.measures)};
 }
 
 /* ---------- station log rows ---------- */
 function buildStationRows(){
   var el=document.getElementById("f-stations");
-  el.innerHTML='<div class="slrow head"><span>Station</span><span>Load kg</span><span>'+"Amount"+'</span><span>Time</span></div>'+
+  if(!el)return;
+  el.innerHTML='<div class="slrow head"><span>Station</span><span>Load kg</span><span>Amount</span><span>Time</span></div>'+
    STATIONS.map(function(x){
      return '<div class="slrow" data-k="'+x.k+'">'+
        '<div class="nm">'+x.n+'<em>'+x.std.replace(/&middot;/g,"\u00b7")+'</em></div>'+
@@ -1340,7 +1495,48 @@ function collectDone(){
 document.getElementById("f-rpe").addEventListener("input",function(){
   document.getElementById("f-rpe-val").textContent=this.value;
   document.getElementById("f-rpe-desc").textContent=RPE_DESC[this.value]||"";
+  updateKcalHint();
 });
+["f-mins","f-kcal"].forEach(function(id){
+  var el=document.getElementById(id);
+  if(el)el.addEventListener("input",updateKcalHint);
+});
+var hrFold=document.getElementById("f-hrfold");
+if(hrFold)hrFold.addEventListener("toggle",function(){if(hrFold.open)updateKcalHint();});
+
+/* Rough energy estimate — MET x 3.5 x kg / 200 x minutes, with the MET read off
+   your RPE. It is an estimate, not a measurement: use the watch figure when you
+   have one. Needs a recent bodyweight, which comes from your measurements. */
+function latestWeight(){
+  var ms=(state.measures||[]).slice().sort(function(a,b){return a.date<b.date?1:-1;});
+  for(var i=0;i<ms.length;i++)if(ms[i].wt)return ms[i].wt;
+  return 0;
+}
+function estimateKcal(mins,rpe,kg){
+  if(!mins||!kg)return 0;
+  var met=Math.min(14,Math.max(3,2+(rpe||6)*1.2));
+  return Math.round(met*3.5*kg/200*mins);
+}
+function updateKcalHint(){
+  var el=document.getElementById("f-kcalhint");
+  if(!el)return;
+  var kcalField=document.getElementById("f-kcal");
+  if(kcalField.value.trim()!==""){el.hidden=true;return;}
+  var mins=parseInt(document.getElementById("f-mins").value,10)||0;
+  var rpe=parseInt(document.getElementById("f-rpe").value,10)||6;
+  var kg=latestWeight();
+  if(!kg){
+    el.hidden=false;
+    el.innerHTML="No, calories are not worked out for you &mdash; type in what your watch says. Log a bodyweight under Stats and I can at least offer an estimate here.";
+    return;
+  }
+  var est=estimateKcal(mins,rpe,kg);
+  if(!est){el.hidden=true;return;}
+  el.hidden=false;
+  el.innerHTML='Not measured &mdash; your watch is the better number. If you do not have it, roughly <b>'+est+' kcal</b> at '+kg+' kg and RPE '+rpe+'. <a href="#" id="f-kcaluse" style="color:var(--accent-ink)">Use it</a>';
+  var a=document.getElementById("f-kcaluse");
+  if(a)a.addEventListener("click",function(ev){ev.preventDefault();kcalField.value=est;el.hidden=true;});
+}
 
 function saveSession(skipped){
   var p=prescription(document.getElementById("f-date").value||selectedDate);
@@ -1379,12 +1575,65 @@ document.getElementById("f-skip").addEventListener("click",function(){saveSessio
 function delSession(id){
   state.sessions=state.sessions.filter(function(s){return s.id!==id;});
   saveLocal();
-  if(gs.on&&gs.url)gsDelete([id]);
+  if(gs.on&&gs.url)gsDelete([id],[]);
   else persist([]);
   render();toast("Deleted");
 }
 
 /* ---------- log view ---------- */
+var openEntry=null;
+function prescriptionFor(ses){
+  try{return prescription(ses.date);}catch(e){return null;}
+}
+function entryDetail(ses){
+  var out='<div class="edetail" data-detail="'+ses.id+'">';
+
+  var cells=[];
+  if(ses.mins)cells.push(["Time",ses.mins+' <small>min</small>']);
+  if(ses.km)cells.push(["Distance",ses.km+' <small>km</small>']);
+  if(ses.rpe)cells.push(["Effort",ses.rpe+' <small>/10</small>']);
+  if(ses.hrAvg)cells.push(["Avg HR",ses.hrAvg+' <small>bpm</small>']);
+  if(ses.hrMax)cells.push(["Max HR",ses.hrMax+' <small>bpm</small>']);
+  if(ses.kcal)cells.push(["Energy",ses.kcal+' <small>kcal</small>']);
+  if(cells.length){
+    out+='<div><h5 style="margin-bottom:8px">The numbers</h5><div class="dgrid">'+
+      cells.map(function(c){return '<div class="dcell"><span class="k">'+c[0]+'</span><span class="v">'+c[1]+'</span></div>';}).join("")+
+      '</div></div>';
+  }
+
+  var p=prescriptionFor(ses);
+  if(p&&p.items&&p.items.length&&!ses.skipped){
+    var done=ses.done||[];
+    out+='<div><h5 style="margin-bottom:8px">What was on the card</h5><ul class="dlist">'+
+      p.items.map(function(t,i){
+        var ok=done.indexOf(i)>-1;
+        return '<li class="'+(ok?"":"no")+'"><span class="tick">'+(ok?"\u2713":"\u00b7")+'</span><span>'+t+'</span></li>';
+      }).join("")+'</ul>';
+    if(done.length)out+='<p style="font-size:.75rem;color:var(--muted);margin-top:8px;">'+done.length+' of '+p.items.length+' ticked off.</p>';
+    else out+='<p style="font-size:.75rem;color:var(--muted);margin-top:8px;">Nothing was ticked &mdash; the session was logged without using the checklist.</p>';
+    out+='</div>';
+  }
+
+  var stn=(ses.stations||[]).filter(function(x){return x.kg!=null||x.amt!=null||x.t!=null;});
+  if(stn.length){
+    out+='<div><h5 style="margin-bottom:8px">Stations</h5><table class="dtable"><tbody>'+
+      stn.map(function(x){
+        var st=STMAP[x.k];
+        var bits=[];
+        if(x.kg!=null)bits.push(x.kg+" kg");
+        if(x.amt!=null)bits.push(x.amt+" "+(st?st.unit:""));
+        if(x.t!=null)bits.push(x.t);
+        return '<tr><td>'+(st?st.n:x.k)+'</td><td class="n">'+bits.join(" &middot; ")+'</td></tr>';
+      }).join("")+'</tbody></table></div>';
+  }
+
+  if(ses.result)out+='<div><h5 style="margin-bottom:6px">Result</h5><div class="dnote mono">'+esc(ses.result)+'</div></div>';
+  if(ses.notes)out+='<div><h5 style="margin-bottom:6px">Notes</h5><div class="dnote">'+esc(ses.notes)+'</div></div>';
+
+  out+='<div style="display:flex;gap:8px;"><button class="btn ghost sm" data-del="'+ses.id+'" style="color:var(--flag)">Delete this session</button></div>';
+  out+='</div>';
+  return out;
+}
 function renderLog(){
   var el=document.getElementById("l-list");
   if(!state.sessions.length){el.innerHTML='<div class="empty">Nothing logged yet.<br>Finish a session and hit Save.</div>';
@@ -1392,29 +1641,38 @@ function renderLog(){
   var mins=state.sessions.reduce(function(a,s){return a+(s.mins||0);},0);
   var km=state.sessions.reduce(function(a,s){return a+(s.km||0);},0);
   document.getElementById("l-summary").textContent=
-    state.sessions.length+" sessions · "+Math.round(mins/60*10)/10+" hours · "+Math.round(km*10)/10+" km run";
+    state.sessions.length+" sessions · "+Math.round(mins/60*10)/10+" hours · "+Math.round(km*10)/10+" km run · tap any one to open it";
   el.innerHTML=state.sessions.map(function(s){
     var d=parseISO(s.date);
     var det=[];
     if(s.mins)det.push(s.mins+" min");
     if(s.km)det.push(s.km+" km");
     if(s.rpe)det.push("RPE "+s.rpe);
-    if(s.hrAvg)det.push(s.hrAvg+" bpm avg"+(s.hrMax?" / "+s.hrMax+" max":""));
-    if(s.kcal)det.push(s.kcal+" kcal");
+    if(s.hrAvg)det.push(s.hrAvg+" bpm");
     if(s.result)det.push(s.result);
-    var stn=(s.stations||[]).filter(function(x){return x.kg!=null;})
-      .map(function(x){return (STMAP[x.k]?STMAP[x.k].n:x.k)+" "+x.kg+"kg";});
-    return '<div class="entry">'+
+    var nSt=(s.stations||[]).length;
+    if(nSt)det.push(nSt+" station"+(nSt>1?"s":""));
+    var isOpen=openEntry===s.id;
+    return '<div class="entry'+(isOpen?" open":"")+'" data-open="'+s.id+'">'+
       '<div class="when"><b>'+d.getDate()+'</b>'+d.toLocaleDateString("en-GB",{month:"short"})+'<br>W'+s.wk+'</div>'+
       '<div class="ttl">'+(s.title||"Session")+(s.skipped?' <span class="chip warn" style="margin-left:4px">skipped</span>':'')+'</div>'+
-      '<div class="det">'+(det.join(" · ")||"—")+
-        (stn.length?'<br><span style="color:var(--accent-ink)">'+stn.join(" · ")+'</span>':'')+
-        (s.notes?'<br><span style="font-family:Archivo,sans-serif;font-size:.78rem">'+esc(s.notes)+'</span>':'')+'</div>'+
-      '<button class="del" data-del="'+s.id+'" aria-label="Delete"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg></button>'+
-      '</div>';
+      '<div class="det">'+(det.join(" · ")||"—")+'</div>'+
+      '<span style="grid-row:span 2;color:var(--muted);font-size:1.1rem;transform:rotate('+(isOpen?"90":"0")+'deg);transition:transform .15s;">&rsaquo;</span>'+
+      '</div>'+(isOpen?entryDetail(s):"");
   }).join("");
+  Array.prototype.forEach.call(el.querySelectorAll("[data-open]"),function(row){
+    row.addEventListener("click",function(){
+      var id=row.getAttribute("data-open");
+      openEntry=(openEntry===id)?null:id;
+      renderLog();
+      if(openEntry){
+        var r=el.querySelector('[data-open="'+id+'"]');
+        if(r)r.scrollIntoView({block:"nearest",behavior:"smooth"});
+      }
+    });
+  });
   Array.prototype.forEach.call(el.querySelectorAll("[data-del]"),function(b){
-    b.addEventListener("click",function(){delSession(b.getAttribute("data-del"));});
+    b.addEventListener("click",function(ev){ev.stopPropagation();delSession(b.getAttribute("data-del"));});
   });
 }
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
@@ -1616,6 +1874,263 @@ function animate(now){
 }
 requestAnimationFrame(animate);
 
+/* ---------- body measurements ---------- */
+var PROF_KEY="roxlog.profile.v1";
+var prof={height:0,sex:"m"};
+function profLoad(){try{var r=localStorage.getItem(PROF_KEY);if(r){var p=JSON.parse(r);prof.height=+p.height||0;prof.sex=p.sex||"m";}}catch(e){}}
+function profSave(){try{localStorage.setItem(PROF_KEY,JSON.stringify(prof));}catch(e){}}
+
+// site key, label, and where its measuring line sits on the figure
+var SITES=[
+ {k:"neck",      n:"Neck",      y:74,  x1:78,  x2:122, side:"L"},
+ {k:"shoulders", n:"Shoulders", y:96,  x1:52,  x2:148, side:"L"},
+ {k:"chest",     n:"Chest",     y:126, x1:58,  x2:142, side:"L"},
+ {k:"bicep",     n:"Bicep",     y:150, x1:26,  x2:52,  side:"L"},
+ {k:"forearm",   n:"Forearm",   y:212, x1:16,  x2:40,  side:"L"},
+ {k:"waist",     n:"Waist",     y:186, x1:66,  x2:134, side:"R"},
+ {k:"hips",      n:"Hips",      y:232, x1:62,  x2:138, side:"R"},
+ {k:"thigh",     n:"Thigh",     y:292, x1:106, x2:140, side:"R"},
+ {k:"calf",      n:"Calf",      y:372, x1:110, x2:136, side:"R"}
+];
+
+function bodySVG(){
+  var lines=SITES.map(function(st){
+    var lead = st.side==="L"
+      ? '<line class="bline" x1="6" y1="'+st.y+'" x2="'+st.x1+'" y2="'+st.y+'"/>'
+      : '<line class="bline" x1="'+st.x2+'" y1="'+st.y+'" x2="194" y2="'+st.y+'"/>';
+    return lead+
+      '<line class="btick" x1="'+st.x1+'" y1="'+(st.y-4)+'" x2="'+st.x1+'" y2="'+(st.y+4)+'"/>'+
+      '<line class="btick" x1="'+st.x2+'" y1="'+(st.y-4)+'" x2="'+st.x2+'" y2="'+(st.y+4)+'"/>'+
+      '<line class="bline" x1="'+st.x1+'" y1="'+st.y+'" x2="'+st.x2+'" y2="'+st.y+'" stroke-dasharray="0"/>';
+  }).join("");
+
+  var wide = prof.sex==="f";
+  var shoulderX = wide?134:142;
+  var hipX = wide?130:126;
+  var waistX = wide?76:78;
+
+  return '<svg viewBox="0 0 200 420" aria-hidden="true">'+
+    // legs
+    '<line class="bfig" x1="86" y1="240" x2="82" y2="330" stroke-width="26" stroke-linecap="round"/>'+
+    '<line class="bfig" x1="82" y1="330" x2="80" y2="400" stroke-width="20" stroke-linecap="round"/>'+
+    '<line class="bfig" x1="114" y1="240" x2="118" y2="330" stroke-width="26" stroke-linecap="round"/>'+
+    '<line class="bfig" x1="118" y1="330" x2="120" y2="400" stroke-width="20" stroke-linecap="round"/>'+
+    // arms
+    '<line class="bfig" x1="'+(200-shoulderX)+'" y1="100" x2="39" y2="176" stroke-width="19" stroke-linecap="round"/>'+
+    '<line class="bfig" x1="39" y1="176" x2="28" y2="244" stroke-width="15" stroke-linecap="round"/>'+
+    '<line class="bfig" x1="'+shoulderX+'" y1="100" x2="161" y2="176" stroke-width="19" stroke-linecap="round"/>'+
+    '<line class="bfig" x1="161" y1="176" x2="172" y2="244" stroke-width="15" stroke-linecap="round"/>'+
+    // torso
+    '<path class="bfig" d="M88,64 L112,64 L'+shoulderX+',100 L'+(waistX+46)+',186 L'+hipX+',240 L'+(200-hipX)+',240 L'+waistX+',186 L'+(200-shoulderX)+',100 Z"/>'+
+    // neck + head
+    '<rect class="bfig" x="90" y="56" width="20" height="14" rx="4"/>'+
+    '<ellipse class="bfig" cx="100" cy="34" rx="20" ry="24"/>'+
+    lines+
+    '</svg>';
+}
+
+function renderBodySheet(existing){
+  var wrap=document.getElementById("b-figure");
+  var left=SITES.filter(function(x){return x.side==="L";});
+  var right=SITES.filter(function(x){return x.side==="R";});
+  var col=function(list){
+    return list.map(function(st){
+      return '<div class="mfield"><label for="m-'+st.k+'">'+st.n+'</label>'+
+        '<input type="number" id="m-'+st.k+'" data-m="'+st.k+'" step="0.1" min="0" max="250" inputmode="decimal" placeholder="cm"></div>';
+    }).join("");
+  };
+  wrap.innerHTML=
+    '<div style="display:grid;grid-template-columns:84px 1fr 84px;gap:8px;align-items:center;">'+
+      '<div style="display:flex;flex-direction:column;gap:9px;">'+col(left)+'</div>'+
+      '<div>'+bodySVG()+'</div>'+
+      '<div style="display:flex;flex-direction:column;gap:9px;">'+col(right)+'</div>'+
+    '</div>';
+  if(existing){
+    SITES.forEach(function(st){
+      var el=document.getElementById("m-"+st.k);
+      if(el&&existing[st.k])el.value=existing[st.k];
+    });
+  }
+  Array.prototype.forEach.call(wrap.querySelectorAll("[data-m]"),function(i){
+    if(i.value)i.classList.add("has");
+    i.addEventListener("input",function(){i.classList.toggle("has",i.value.trim()!=="");renderDerived();});
+  });
+  renderDerived();
+}
+
+function bodyFat(waist,neck,hips){
+  if(!prof.height||!waist||!neck)return null;
+  var h=prof.height,v;
+  if(prof.sex==="f"){
+    if(!hips)return null;
+    v=495/(1.29579-0.35004*Math.log(waist+hips-neck)/Math.LN10+0.22100*Math.log(h)/Math.LN10)-450;
+  }else{
+    if(waist<=neck)return null;
+    v=495/(1.0324-0.19077*Math.log(waist-neck)/Math.LN10+0.15456*Math.log(h)/Math.LN10)-450;
+  }
+  return (isFinite(v)&&v>2&&v<70)?Math.round(v*10)/10:null;
+}
+function readSheetVals(){
+  var o={};
+  SITES.forEach(function(st){
+    var el=document.getElementById("m-"+st.k);
+    if(el&&el.value.trim()!=="")o[st.k]=parseFloat(el.value);
+  });
+  var w=document.getElementById("b-wt");
+  if(w&&w.value.trim()!=="")o.wt=parseFloat(w.value);
+  return o;
+}
+function renderDerived(){
+  var v=readSheetVals();
+  var out=[];
+  var bf=bodyFat(v.waist,v.neck,v.hips);
+  if(bf!=null)out.push(["Body fat",bf+' <small>%</small>']);
+  else if(v.waist&&v.neck&&!prof.height)out.push(["Body fat",'<small style="font-size:.66rem">set your height in More</small>']);
+  if(v.waist&&v.hips)out.push(["Waist / hip",(Math.round(v.waist/v.hips*100)/100)]);
+  if(v.waist&&prof.height)out.push(["Waist / height",(Math.round(v.waist/prof.height*100)/100)]);
+  if(v.wt&&prof.height)out.push(["BMI",(Math.round(v.wt/Math.pow(prof.height/100,2)*10)/10)]);
+  document.getElementById("b-derived").innerHTML=out.length?
+    out.map(function(c){return '<div class="dcell"><span class="k">'+c[0]+'</span><span class="v">'+c[1]+'</span></div>';}).join(""):
+    '<p style="font-size:.78rem;color:var(--muted);margin:0;">Fill in neck and waist and your body-fat percentage is worked out here.</p>';
+}
+
+var editingMeasure=null;
+function openBody(existing){
+  editingMeasure=existing||null;
+  document.getElementById("b-date").value=(existing&&existing.date)||todayISO();
+  document.getElementById("b-wt").value=(existing&&existing.wt)||"";
+  document.getElementById("b-notes").value=(existing&&existing.notes)||"";
+  document.getElementById("bs-title").textContent=existing?"Edit measurements":"Measurements";
+  renderBodySheet(existing);
+  document.getElementById("bsheet").classList.add("open");
+  document.body.style.overflow="hidden";
+}
+function closeBody(){editingMeasure=null;document.getElementById("bsheet").classList.remove("open");document.body.style.overflow="";}
+Array.prototype.forEach.call(document.querySelectorAll("[data-bclose]"),function(b){b.addEventListener("click",closeBody);});
+document.getElementById("b-add").addEventListener("click",function(){openBody(null);});
+document.getElementById("b-wt").addEventListener("input",renderDerived);
+document.getElementById("b-save").addEventListener("click",function(){
+  var v=readSheetVals();
+  if(!Object.keys(v).length){toast("Nothing to save yet");return;}
+  var m=Object.assign({
+    id:(editingMeasure&&editingMeasure.id)||("m"+Math.random().toString(36).slice(2,10)),
+    date:document.getElementById("b-date").value||todayISO(),
+    notes:document.getElementById("b-notes").value.trim()
+  },v);
+  var bf=bodyFat(v.waist,v.neck,v.hips); if(bf!=null)m.bf=bf;
+  stamp(m);
+  state.measures=(state.measures||[]).filter(function(x){return x.id!==m.id;});
+  state.measures.unshift(m);
+  state.measures.sort(function(a,b){return a.date<b.date?1:-1;});
+  saveLocal();
+  if(gs.on&&gs.url&&!inClaudeViewer())gsPushMeasures([m]);
+  else persist([]);
+  closeBody();render();toast("Measurements saved");
+});
+function delMeasure(id){
+  state.measures=(state.measures||[]).filter(function(x){return x.id!==id;});
+  saveLocal();
+  if(gs.on&&gs.url&&!inClaudeViewer())gsDelete([],[id]); else persist([]);
+  render();toast("Deleted");
+}
+
+function fmtDelta(now,then,invert){
+  if(then==null||now==null)return "";
+  var d=Math.round((now-then)*10)/10;
+  if(!d)return '<span class="delta" style="color:var(--muted)">&plusmn;0</span>';
+  var good=invert?d<0:d>0;
+  return '<span class="delta '+(good?"dn":"up")+'">'+(d>0?"+":"")+d+'</span>';
+}
+function renderBody(){
+  var ms=(state.measures||[]).slice().sort(function(a,b){return a.date<b.date?1:-1;});
+  var el=document.getElementById("b-summary");
+  if(!ms.length){
+    el.innerHTML='<div class="empty">No measurements yet.<br>Take them once a week &mdash; same day, same time, before breakfast &mdash; and the trend will tell you far more than any single number.</div>';
+    document.getElementById("b-chartcard").hidden=true;
+    return;
+  }
+  var last=ms[0], prev=ms[1]||null, first=ms[ms.length-1];
+  var tiles=[];
+  if(last.wt)tiles.push(["Weight",last.wt+' <small>kg</small>',fmtDelta(last.wt,prev&&prev.wt,true)]);
+  if(last.waist)tiles.push(["Waist",last.waist+' <small>cm</small>',fmtDelta(last.waist,prev&&prev.waist,true)]);
+  if(last.bf)tiles.push(["Body fat",last.bf+' <small>%</small>',fmtDelta(last.bf,prev&&prev.bf,true)]);
+  if(last.chest)tiles.push(["Chest",last.chest+' <small>cm</small>',fmtDelta(last.chest,prev&&prev.chest,false)]);
+  if(last.bicep)tiles.push(["Bicep",last.bicep+' <small>cm</small>',fmtDelta(last.bicep,prev&&prev.bicep,false)]);
+  if(last.thigh)tiles.push(["Thigh",last.thigh+' <small>cm</small>',fmtDelta(last.thigh,prev&&prev.thigh,false)]);
+
+  var head='<div style="padding:14px 16px 4px;"><div class="dgrid">'+
+    tiles.map(function(t){return '<div class="dcell"><span class="k">'+t[0]+'</span><span class="v">'+t[1]+' '+t[2]+'</span></div>';}).join("")+
+    '</div><p style="font-size:.74rem;color:var(--muted);margin:10px 0 0;">Change against your previous set'+
+    (prev?' ('+parseISO(prev.date).toLocaleDateString("en-GB",{day:"numeric",month:"short"})+')':'')+
+    '. Green is the direction you want &mdash; down for weight, waist and body fat; up for the limbs.</p></div>';
+
+  var rows=ms.slice(0,8).map(function(m){
+    var d=parseISO(m.date);
+    var bits=[];
+    ["neck","shoulders","chest","waist","hips","bicep","forearm","thigh","calf"].forEach(function(k){
+      if(m[k])bits.push(k.slice(0,2).toUpperCase()+" "+m[k]);
+    });
+    return '<div class="msnap">'+
+      '<div class="when" style="grid-row:span 2"><b>'+d.getDate()+'</b>'+d.toLocaleDateString("en-GB",{month:"short"})+'</div>'+
+      '<div style="font-weight:700;font-size:.88rem;">'+(m.wt?m.wt+" kg":"—")+(m.bf?' <span style="font-weight:400;color:var(--muted);font-size:.8rem">'+m.bf+"% bf</span>":"")+'</div>'+
+      '<button class="btn ghost sm" data-medit="'+m.id+'" style="grid-row:span 2">Edit</button>'+
+      '<button class="del" data-mdel="'+m.id+'" aria-label="Delete" style="grid-row:span 2"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg></button>'+
+      '<div class="mm" style="grid-column:2">'+(bits.join(" · ")||"no tape measurements")+'</div>'+
+      '</div>';
+  }).join("");
+  el.innerHTML=head+'<div style="border-top:1px solid var(--line);margin-top:12px;">'+rows+'</div>';
+  Array.prototype.forEach.call(el.querySelectorAll("[data-medit]"),function(b){
+    b.addEventListener("click",function(){
+      var id=b.getAttribute("data-medit");
+      openBody((state.measures||[]).filter(function(x){return x.id===id;})[0]);
+    });
+  });
+  Array.prototype.forEach.call(el.querySelectorAll("[data-mdel]"),function(b){
+    b.addEventListener("click",function(){delMeasure(b.getAttribute("data-mdel"));});
+  });
+
+  // two-series chart: weight and waist, indexed so one axis serves both
+  var pts=ms.slice().reverse().filter(function(m){return m.wt||m.waist;});
+  var card=document.getElementById("b-chartcard");
+  if(pts.length<2){card.hidden=true;return;}
+  card.hidden=false;
+  var svg=document.getElementById("b-chart");
+  var Wd=680,Hd=150,pad={l:30,r:34,t:10,b:20},iw=Wd-pad.l-pad.r,ih=Hd-pad.t-pad.b;
+  var series=[
+    {k:"wt",  label:"Weight", vals:pts.map(function(m){return m.wt||null;})},
+    {k:"waist",label:"Waist", vals:pts.map(function(m){return m.waist||null;})}
+  ].filter(function(sr){return sr.vals.filter(function(v){return v!=null;}).length>1;});
+  // indexed to each series' own first value so both share one axis honestly
+  var out='';
+  [0,.5,1].forEach(function(f){var y=pad.t+ih-ih*f;out+='<line class="grid" x1="'+pad.l+'" y1="'+y+'" x2="'+(Wd-pad.r)+'" y2="'+y+'"/>';});
+  var allIdx=[];
+  series.forEach(function(sr){
+    var base=sr.vals.filter(function(v){return v!=null;})[0];
+    sr.idx=sr.vals.map(function(v){return v==null?null:(v/base-1)*100;});
+    sr.idx.forEach(function(v){if(v!=null)allIdx.push(v);});
+  });
+  var lo=Math.min(-1.5,Math.min.apply(null,allIdx)), hi=Math.max(1.5,Math.max.apply(null,allIdx));
+  var bx=function(i){return pad.l+(pts.length===1?iw/2:(i/(pts.length-1))*iw);};
+  var by=function(v){return pad.t+ih-((v-lo)/(hi-lo))*ih;};
+  var COL={wt:"var(--accent)",waist:"var(--flag)"};
+  series.forEach(function(sr){
+    var pp=[];sr.idx.forEach(function(v,i){if(v!=null)pp.push(bx(i).toFixed(1)+","+by(v).toFixed(1));});
+    out+='<polyline points="'+pp.join(" ")+'" fill="none" stroke="'+COL[sr.k]+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+    sr.idx.forEach(function(v,i){
+      if(v==null)return;
+      out+='<circle cx="'+bx(i).toFixed(1)+'" cy="'+by(v).toFixed(1)+'" r="3.6" fill="'+COL[sr.k]+'" stroke="var(--surface)" stroke-width="2"><title>'+sr.label+' '+pts[i].date+': '+(sr.vals[i])+' ('+(v>0?"+":"")+Math.round(v*10)/10+'%)</title></circle>';
+    });
+    var lastI=-1;sr.idx.forEach(function(v,i){if(v!=null)lastI=i;});
+    if(lastI>-1)out+='<text x="'+(bx(lastI)+6).toFixed(1)+'" y="'+(by(sr.idx[lastI])+3).toFixed(1)+'" fill="'+COL[sr.k]+'" font-size="9" font-family="JetBrains Mono, monospace" font-weight="700">'+sr.label.slice(0,2).toUpperCase()+'</text>';
+  });
+  out+='<text class="axlbl" x="0" y="'+(pad.t+8)+'">'+(hi>0?"+":"")+Math.round(hi)+'%</text>';
+  out+='<text class="axlbl" x="0" y="'+(pad.t+ih)+'">'+Math.round(lo)+'%</text>';
+  svg.setAttribute("viewBox","0 0 "+Wd+" "+Hd);svg.innerHTML=out;
+  document.getElementById("b-chartcap").innerHTML=
+    'Percent change from your first measurement, so weight and waist share one axis honestly. '+
+    '<span style="color:var(--accent);font-weight:700">Weight</span> and <span style="color:var(--flag);font-weight:700">waist</span> falling together is fat loss; waist falling while weight holds is recomposition, which is what you are actually after.';
+}
+
 /* ---------- plan view ---------- */
 function renderPlan(){
   var cur=weekOf(todayISO());
@@ -1662,7 +2177,7 @@ document.getElementById("s-file").addEventListener("change",function(e){
       var inc=JSON.parse(r.result);
       if(!inc||!Array.isArray(inc.sessions))throw 0;
       state=merge(state,inc);saveLocal();
-      if(gs.on&&gs.url)gsPost({action:"upsert",sessions:state.sessions.map(function(x){return x.updatedAt?x:stamp(x);})}).catch(function(){});
+      if(gs.on&&gs.url)gsUpsert(state.sessions.map(function(x){return x.updatedAt?x:stamp(x);}),(state.measures||[]).map(function(x){return x.updatedAt?x:stamp(x);})).catch(function(){});
       else persist([]);
       render();toast("Imported "+inc.sessions.length+" sessions");
     }catch(err){toast("That file could not be read");}
@@ -1670,10 +2185,11 @@ document.getElementById("s-file").addEventListener("change",function(e){
   r.readAsText(f);e.target.value="";
 });
 document.getElementById("s-wipe").addEventListener("click",function(){
-  if(state.sessions.length&&!window.confirm("Erase all "+state.sessions.length+" logged sessions? This cannot be undone."))return;
+  if((state.sessions.length||(state.measures||[]).length)&&!window.confirm("Erase all "+state.sessions.length+" sessions and "+((state.measures||[]).length)+" measurement sets? This cannot be undone."))return;
   var ids=state.sessions.map(function(x){return x.id;});
-  state={v:1,sessions:[]};saveLocal();
-  if(gs.on&&gs.url)gsDelete(ids); else persist([]);
+  var mids=(state.measures||[]).map(function(x){return x.id;});
+  state={v:1,sessions:[],measures:[]};saveLocal();
+  if(gs.on&&gs.url)gsDelete(ids,mids); else persist([]);
   render();toast("Erased");
 });
 
@@ -1697,7 +2213,7 @@ function toast(msg){
 }
 
 /* ---------- render ---------- */
-function render(){renderToday();renderLog();renderProgress();renderMoves();renderPlan();}
+function render(){renderToday();renderLog();renderProgress();renderBody();renderMoves();renderPlan();}
 
 buildStationRows();
 document.getElementById("f-date").value=selectedDate;
