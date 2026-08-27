@@ -1,5 +1,14 @@
 # Roxlog — Google Sheet backend
 
+> **Updating from v1?** Paste the new `Code.gs` over the old one, then
+> **Deploy → Manage deployments → pencil → Version: New version → Deploy.**
+> The URL and token stay the same. Without that redeploy nothing changes,
+> and saves will keep failing.
+>
+> v2 fixes writes (they now work over GET, because Apps Script does not
+> reliably send CORS headers on POST) and adds a `measures` tab for body
+> measurements.
+
 Turns a Google Sheet into the database for your Roxlog install, so the copy
 you host on GitHub Pages syncs across every device you train from.
 
@@ -33,8 +42,17 @@ needs doing again.
 
 One row per session, on a tab called `sessions`:
 
+**`sessions` tab** — one row per training session:
+
 | id | date | wk | day | title | mins | km | rpe | hrAvg | hrMax | kcal | result | notes | stations | skipped | updatedAt |
 |----|------|----|-----|-------|------|----|----|-------|-------|------|--------|-------|----------|---------|-----------|
+
+**`measures` tab** — one row per set of body measurements:
+
+| id | date | wt | neck | shoulders | chest | waist | hips | bicep | forearm | thigh | calf | bf | notes | updatedAt |
+|----|------|----|------|-----------|-------|-------|------|-------|---------|-------|------|----|-------|-----------|
+
+Weight in kg, everything else in cm, `bf` is the calculated body-fat percentage.
 
 `stations` holds the per-station loads as JSON, e.g.
 `[{"k":"push","kg":120,"amt":50,"t":"2:14"}]`.
@@ -61,18 +79,26 @@ Two consequences:
 
 ## API, if you ever want to call it yourself
 
-`GET  <url>?token=YOUR_TOKEN` → `{ok:true, sessions:[...]}`
+Every action works over **both** GET and POST.
 
-`POST <url>` with `Content-Type: text/plain;charset=utf-8` and a JSON body:
-
-```json
-{ "token": "YOUR_TOKEN", "action": "upsert",  "sessions": [ { "id": "...", ... } ] }
-{ "token": "YOUR_TOKEN", "action": "delete",  "ids": ["s123"] }
-{ "token": "YOUR_TOKEN", "action": "replace", "sessions": [ ... ] }
+```
+GET <url>?token=TOKEN&action=list
+GET <url>?token=TOKEN&action=upsert&payload=<urlencoded JSON>
 ```
 
-`text/plain` is deliberate: it keeps the request "simple" so the browser
-sends no CORS preflight, which Apps Script cannot answer.
+```json
+POST <url>   Content-Type: text/plain;charset=utf-8
+{ "token": "TOKEN", "action": "upsert",  "sessions": [...], "measures": [...] }
+{ "token": "TOKEN", "action": "delete",  "ids": ["s123"], "measureIds": ["m456"] }
+{ "token": "TOKEN", "action": "replace", "sessions": [...] }
+```
+
+Roxlog tries POST and falls back to GET. **This is the fix for writes not
+landing:** Apps Script does not reliably attach CORS headers to POST
+responses, so a browser can block the write even when the script is
+perfectly healthy — which is exactly why "Connect & test" (a GET) can
+succeed while saves silently fail. Large pushes are chunked so GET URLs
+stay well under the length limit.
 
 ## Troubleshooting
 
@@ -80,6 +106,7 @@ sends no CORS preflight, which Apps Script cannot answer.
 |---|---|
 | "no answer from that URL" | Wrong link (use the `/exec` one, not `/dev`), or access isn't set to Anyone |
 | "rejected the token" | `TOKEN` in Code.gs doesn't match what you typed. Change it, **redeploy**, try again |
+| Connect works but nothing saves | You are on v1 of `Code.gs`. Paste in v2 and **redeploy** |
 | Changes don't appear on the other device | Hit **Pull all down**. Roxlog only pulls on load |
 | Everything vanished | Your sessions are still in the sheet. **Pull all down** |
 
