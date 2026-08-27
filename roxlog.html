@@ -1,0 +1,1709 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="HYROX training tracker - 37-week plan to HYROX Bengaluru, with session logging, station loads and movement standards.">
+<meta name="theme-color" content="#EEEFEA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#131519" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Roxlog">
+<title>Roxlog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+:root{
+  --ground:#EEEFEA; --surface:#FAFBF7; --surface-2:#E5E7E0; --surface-3:#DADCD3;
+  --ink:#181A1E; --ink-2:#3D414A; --muted:#666B75;
+  --line:#D6D8CF; --line-2:#C2C5BA;
+  --accent:#2B6350; --accent-soft:#DCE7E1; --accent-ink:#1E4A3B;
+  --flag:#A83B22; --flag-soft:#F2E0DA;
+  --gold:#8A6A1F; --gold-soft:#F0E7D2;
+  --shadow:0 1px 2px rgba(24,26,30,.05),0 10px 28px -14px rgba(24,26,30,.18);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#131519; --surface:#1B1E23; --surface-2:#23272E; --surface-3:#2C313A;
+  --ink:#E9EAE4; --ink-2:#C2C5BD; --muted:#8E939C;
+  --line:#2C3038; --line-2:#3A3F49;
+  --accent:#6FB99B; --accent-soft:#1D2E28; --accent-ink:#8FCFB2;
+  --flag:#E08262; --flag-soft:#33211B;
+  --gold:#D6B972; --gold-soft:#2C2618;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+}}
+:root[data-theme="dark"]{
+  --ground:#131519; --surface:#1B1E23; --surface-2:#23272E; --surface-3:#2C313A;
+  --ink:#E9EAE4; --ink-2:#C2C5BD; --muted:#8E939C;
+  --line:#2C3038; --line-2:#3A3F49;
+  --accent:#6FB99B; --accent-soft:#1D2E28; --accent-ink:#8FCFB2;
+  --flag:#E08262; --flag-soft:#33211B;
+  --gold:#D6B972; --gold-soft:#2C2618;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--ground); color:var(--ink);
+  font-family:Archivo,"Helvetica Neue",Arial,sans-serif;
+  font-size:16px; line-height:1.5; -webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+}
+.mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums;}
+button{font-family:inherit;font-size:inherit;cursor:pointer;}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px;}
+
+/* shell */
+.app{max-width:680px;margin:0 auto;padding:0 14px 108px;}
+.topbar{
+  position:sticky;top:0;z-index:20;background:var(--ground);
+  padding:14px 0 10px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.brand{font-weight:800;font-size:1.02rem;letter-spacing:-.02em;display:flex;align-items:baseline;gap:8px;}
+.brand em{font-style:normal;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;}
+.syncchip{
+  margin-left:auto;display:inline-flex;align-items:center;gap:6px;
+  font-size:.62rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  padding:4px 9px;border-radius:100px;border:1px solid var(--line-2);color:var(--muted);
+  background:var(--surface);
+}
+.syncchip .dot{width:6px;height:6px;border-radius:50%;background:var(--muted);}
+.syncchip.on{color:var(--accent-ink);border-color:var(--accent);background:var(--accent-soft);}
+.syncchip.on .dot{background:var(--accent);}
+.syncchip.busy .dot{background:var(--gold);}
+
+/* tabs */
+.tabs{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;
+  background:var(--surface);border-top:1px solid var(--line-2);
+  display:flex;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));
+  box-shadow:0 -4px 20px -12px rgba(0,0,0,.3);
+}
+.tabs button{
+  flex:1;min-width:0;background:none;border:0;padding:9px 2px 7px;border-radius:6px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  font-size:.58rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--muted);white-space:nowrap;
+}
+.tabs button svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+.tabs button[aria-selected=true]{color:var(--accent-ink);background:var(--accent-soft);}
+
+.view{display:none;padding-top:16px;}
+.view.active{display:block;}
+
+/* generic */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);overflow:hidden;}
+.card + .card{margin-top:12px;}
+.card-head{padding:13px 16px;border-bottom:1px solid var(--line);background:var(--surface-2);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.card-body{padding:16px;}
+h2{font-size:1.24rem;font-weight:800;letter-spacing:-.022em;margin:0 0 4px;}
+h3{font-size:.96rem;font-weight:700;margin:0;letter-spacing:-.01em;}
+.sub{font-size:.8rem;color:var(--muted);}
+.lbl{font-size:.62rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);}
+.section-head{margin:26px 0 12px;display:flex;align-items:baseline;gap:10px;}
+.section-head .lbl{color:var(--accent-ink);}
+.section-head .hr{flex:1;height:1px;background:var(--line-2);}
+.empty{padding:34px 20px;text-align:center;color:var(--muted);font-size:.88rem;}
+
+/* today hero */
+.hero{display:flex;flex-direction:column;gap:3px;margin-bottom:14px;}
+.hero .date{font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
+.hero h1{font-size:1.9rem;font-weight:800;letter-spacing:-.03em;margin:0;line-height:1.08;}
+.hero .meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.chip{
+  font-size:.63rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:4px 9px;border-radius:100px;background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line);
+}
+.chip.acc{background:var(--accent-soft);color:var(--accent-ink);border-color:var(--accent);}
+.chip.warn{background:var(--flag-soft);color:var(--flag);border-color:var(--flag);}
+.chip.gold{background:var(--gold-soft);color:var(--gold);border-color:var(--gold);}
+
+/* checklist */
+.items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;}
+.items li{border-bottom:1px solid var(--line);}
+.items li:last-child{border-bottom:0;}
+.items label{display:flex;gap:12px;align-items:flex-start;padding:13px 16px;cursor:pointer;}
+.items input{
+  appearance:none;-webkit-appearance:none;flex:0 0 auto;width:20px;height:20px;margin:1px 0 0;
+  border:1.6px solid var(--line-2);border-radius:4px;background:var(--surface);
+  display:grid;place-content:center;transition:background .12s,border-color .12s;
+}
+.items input:checked{background:var(--accent);border-color:var(--accent);}
+.items input:checked::after{content:"";width:9px;height:5px;border-left:2.2px solid var(--surface);border-bottom:2.2px solid var(--surface);transform:rotate(-45deg) translate(1px,-1px);}
+.items .txt{font-size:.93rem;color:var(--ink-2);line-height:1.45;}
+.items input:checked ~ .txt{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line-2);}
+.items .txt b{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:.88em;color:var(--ink);font-variant-numeric:tabular-nums;}
+
+.coachnote{
+  margin:0;padding:13px 16px;background:var(--flag-soft);border-top:1px solid var(--line);
+  font-size:.84rem;color:var(--ink-2);line-height:1.5;
+}
+.coachnote b{color:var(--flag);font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:3px;}
+
+/* timer */
+.timerbar{display:flex;align-items:center;gap:12px;padding:14px 16px;border-top:1px solid var(--line);background:var(--surface-2);flex-wrap:wrap;}
+.clock{font-family:"JetBrains Mono",monospace;font-size:1.85rem;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:var(--ink);min-width:104px;}
+.clock.run{color:var(--accent-ink);}
+.btn{
+  border:1px solid var(--line-2);background:var(--surface);color:var(--ink);
+  padding:9px 15px;border-radius:6px;font-weight:700;font-size:.8rem;letter-spacing:.02em;
+  transition:background .12s,border-color .12s;
+}
+.btn:hover{background:var(--surface-3);}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+:root[data-theme="dark"] .btn.primary, :root:not([data-theme="light"]) .btn.primary{color:#0F1714;}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .btn.primary{color:#fff;}}
+.btn.primary:hover{filter:brightness(1.07);}
+.btn.ghost{background:none;border-color:transparent;color:var(--muted);}
+.btn.sm{padding:6px 11px;font-size:.72rem;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto;}
+
+/* form */
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field .lbl{color:var(--muted);}
+input[type=number],input[type=text],input[type=date],textarea,select{
+  font-family:"JetBrains Mono",monospace;font-size:.92rem;
+  background:var(--ground);border:1px solid var(--line-2);border-radius:6px;
+  padding:9px 11px;color:var(--ink);width:100%;
+}
+textarea{font-family:Archivo,sans-serif;resize:vertical;min-height:64px;line-height:1.45;}
+input[type=range]{width:100%;accent-color:var(--accent);}
+.rpe-row{display:flex;align-items:center;gap:12px;}
+.rpe-val{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:1.3rem;min-width:34px;text-align:right;color:var(--accent-ink);}
+.rpe-desc{font-size:.74rem;color:var(--muted);}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:10px;}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:3px;}
+.stat .k{font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+.stat .v{font-family:"JetBrains Mono",monospace;font-size:1.5rem;font-weight:700;letter-spacing:-.03em;color:var(--ink);line-height:1.1;}
+.stat .v small{font-size:.6rem;color:var(--muted);font-weight:400;letter-spacing:0;}
+
+/* chart */
+.chartwrap{padding:16px;}
+.chart{width:100%;height:150px;display:block;overflow:visible;}
+.chart .grid{stroke:var(--line);stroke-width:1;}
+.chart .bar{fill:var(--accent);}
+.chart .bar.dim{fill:var(--line-2);}
+.chart .axlbl{fill:var(--muted);font-size:9px;font-family:"JetBrains Mono",monospace;}
+.chart .lineseries{stroke:var(--accent);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.chart .pt{fill:var(--accent);stroke:var(--surface);stroke-width:2;}
+.chart-cap{padding:0 16px 14px;font-size:.76rem;color:var(--muted);}
+
+/* log list */
+.entry{display:grid;grid-template-columns:auto 1fr auto;gap:2px 13px;padding:13px 16px;border-bottom:1px solid var(--line);align-items:center;}
+.entry:last-child{border-bottom:0;}
+.entry .when{font-family:"JetBrains Mono",monospace;font-size:.7rem;color:var(--muted);grid-row:span 2;text-align:center;line-height:1.25;}
+.entry .when b{display:block;font-size:1.05rem;color:var(--ink);font-weight:700;}
+.entry .ttl{font-weight:700;font-size:.9rem;}
+.entry .det{font-size:.75rem;color:var(--muted);font-family:"JetBrains Mono",monospace;grid-column:2;}
+.entry .del{grid-row:span 2;background:none;border:0;color:var(--muted);padding:6px;line-height:0;border-radius:5px;}
+.entry .del:hover{color:var(--flag);background:var(--flag-soft);}
+.entry .del svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;}
+
+/* program list */
+.wk{border-bottom:1px solid var(--line);}
+.wk:last-child{border-bottom:0;}
+.wk summary{padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none;flex-wrap:wrap;}
+.wk summary::-webkit-details-marker{display:none;}
+.wk summary .n{font-weight:800;font-size:.82rem;letter-spacing:.02em;min-width:62px;}
+.wk summary .dt{font-family:"JetBrains Mono",monospace;font-size:.7rem;color:var(--muted);}
+.wk summary .bd{margin-left:auto;font-family:"JetBrains Mono",monospace;font-size:.68rem;color:var(--accent-ink);}
+.wk[open] summary{background:var(--surface-2);}
+.wk .wkbody{padding:4px 16px 16px;display:flex;flex-direction:column;gap:11px;}
+.wkday{display:grid;grid-template-columns:52px 1fr;gap:0 12px;}
+.wkday .d{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-top:2px;}
+.wkday .l{font-size:.86rem;color:var(--ink-2);line-height:1.45;}
+.wkday .l b{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:.9em;color:var(--ink);}
+.wk.now{border-left:3px solid var(--accent);}
+.wk.dl{background:var(--accent-soft);}
+.wk.ms{background:var(--flag-soft);}
+
+.toast{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:84px;z-index:60;
+  background:var(--ink);color:var(--ground);padding:11px 18px;border-radius:100px;
+  font-size:.82rem;font-weight:600;box-shadow:0 8px 30px -8px rgba(0,0,0,.5);
+  opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-4px);}
+
+.settings-row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap;}
+.settings-row:last-child{border-bottom:0;}
+.settings-row .t{flex:1;min-width:150px;}
+.settings-row .t b{display:block;font-size:.88rem;font-weight:700;}
+.settings-row .t span{font-size:.76rem;color:var(--muted);}
+
+/* ---------- moves ---------- */
+.moves{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;}
+.move{background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden;cursor:pointer;text-align:left;padding:0;width:100%;font-family:inherit;color:inherit;box-shadow:var(--shadow);}
+.move:hover{border-color:var(--line-2);}
+.move svg{width:100%;height:120px;display:block;background:var(--surface-2);}
+.move .cap{padding:10px 12px 12px;display:flex;flex-direction:column;gap:2px;}
+.move .cap b{font-size:.86rem;font-weight:700;}
+.move .cap span{font-size:.7rem;color:var(--muted);font-family:"JetBrains Mono",monospace;}
+.move .cap i{font-style:normal;font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-ink);}
+
+.sheet{position:fixed;inset:0;z-index:50;display:none;}
+.sheet.open{display:block;}
+.sheet .scrim{position:absolute;inset:0;background:rgba(10,12,14,.55);}
+.sheet .panel{
+  position:absolute;left:0;right:0;bottom:0;max-height:88vh;overflow-y:auto;
+  background:var(--ground);border-top-left-radius:14px;border-top-right-radius:14px;
+  border-top:1px solid var(--line-2);padding:0 0 calc(20px + env(safe-area-inset-bottom,0px));
+  max-width:680px;margin:0 auto;
+}
+.sheet .grab{width:38px;height:4px;border-radius:100px;background:var(--line-2);margin:10px auto 4px;}
+.sheet .phead{padding:8px 18px 14px;display:flex;align-items:flex-start;gap:12px;}
+.sheet .phead h3{font-size:1.15rem;font-weight:800;letter-spacing:-.02em;}
+.sheet .phead .close{margin-left:auto;background:none;border:0;color:var(--muted);font-size:1.5rem;line-height:1;padding:0 4px;}
+.sheet svg.big{width:100%;height:210px;display:block;background:var(--surface-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.sheet .pbody{padding:16px 18px 4px;display:flex;flex-direction:column;gap:14px;}
+.rulelist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;}
+.rulelist li{display:grid;grid-template-columns:auto 1fr;gap:10px;font-size:.87rem;color:var(--ink-2);line-height:1.45;align-items:start;}
+.rulelist li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent);margin-top:8px;}
+.norep{background:var(--flag-soft);border-radius:6px;padding:12px 14px;font-size:.85rem;color:var(--ink-2);line-height:1.45;}
+.norep b{display:block;font-size:.6rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--flag);margin-bottom:4px;}
+
+/* ---------- station log rows ---------- */
+.stationlog{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:6px;overflow:hidden;}
+.slrow{display:grid;grid-template-columns:1fr 66px 66px 66px;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--line);}
+.slrow:last-child{border-bottom:0;}
+.slrow.head{background:var(--surface-2);padding:7px 10px;}
+.slrow.head span{font-size:.56rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:center;}
+.slrow.head span:first-child{text-align:left;}
+.slrow .nm{font-size:.8rem;font-weight:600;line-height:1.2;}
+.slrow .nm em{display:block;font-style:normal;font-size:.62rem;color:var(--muted);font-family:"JetBrains Mono",monospace;}
+.slrow input{padding:6px 5px;font-size:.78rem;text-align:center;border-radius:5px;}
+.slrow.filled{background:var(--accent-soft);}
+
+details.fold{border:1px solid var(--line);border-radius:6px;overflow:hidden;}
+details.fold summary{padding:11px 14px;cursor:pointer;list-style:none;font-size:.82rem;font-weight:700;background:var(--surface-2);display:flex;align-items:center;gap:8px;}
+details.fold summary::-webkit-details-marker{display:none;}
+details.fold summary::after{content:"+";margin-left:auto;color:var(--muted);font-weight:400;font-size:1.1rem;}
+details.fold[open] summary::after{content:"\2212";}
+details.fold .fbody{padding:12px;}
+
+@media (max-width:420px){
+  .app{padding:0 11px 108px;}
+  .hero h1{font-size:1.6rem;}
+  .clock{font-size:1.55rem;min-width:90px;}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">Roxlog <em>Bengaluru '27</em></div>
+    <div class="syncchip" id="syncchip"><span class="dot"></span><span id="syncTxt">Local</span></div>
+  </div>
+
+  <!-- ===== TODAY ===== -->
+  <div class="view active" id="v-today">
+    <div class="hero">
+      <div class="date" id="t-date">&mdash;</div>
+      <h1 id="t-title">&mdash;</h1>
+      <div class="meta" id="t-meta"></div>
+    </div>
+
+    <div class="card" id="t-card">
+      <ul class="items" id="t-items"></ul>
+      <div class="coachnote" id="t-note" hidden></div>
+      <div class="timerbar">
+        <div class="clock" id="t-clock">00:00</div>
+        <div class="btn-row">
+          <button class="btn" id="t-startstop">Start</button>
+          <button class="btn ghost sm" id="t-reset">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="t-logcard">
+      <div class="card-head"><h3>Log this session</h3></div>
+      <div class="card-body" style="display:flex;flex-direction:column;gap:16px;">
+        <div class="fields">
+          <div class="field"><label class="lbl" for="f-mins">Minutes</label><input type="number" id="f-mins" min="0" max="300" step="1" inputmode="numeric" placeholder="0"></div>
+          <div class="field"><label class="lbl" for="f-km">Km run</label><input type="number" id="f-km" min="0" max="30" step="0.5" inputmode="decimal" placeholder="0"></div>
+          <div class="field"><label class="lbl" for="f-date">Date</label><input type="date" id="f-date"></div>
+        </div>
+        <div class="field">
+          <span class="lbl">Effort (RPE)</span>
+          <div class="rpe-row">
+            <input type="range" id="f-rpe" min="1" max="10" step="1" value="6">
+            <span class="rpe-val mono" id="f-rpe-val">6</span>
+          </div>
+          <span class="rpe-desc" id="f-rpe-desc">Working, could hold a short sentence</span>
+        </div>
+        <details class="fold" id="f-stationfold">
+          <summary>Stations &mdash; what you lifted</summary>
+          <div class="fbody">
+            <div class="stationlog" id="f-stations"></div>
+            <p style="font-size:.74rem;color:var(--muted);margin-top:9px;line-height:1.45;">Fill only the rows you actually did. Load is what was on the sled or in your hands; amount is metres or reps; time is that station alone.</p>
+          </div>
+        </details>
+
+        <details class="fold" id="f-hrfold">
+          <summary>Heart rate &amp; calories &mdash; from your watch</summary>
+          <div class="fbody">
+            <div class="fields">
+              <div class="field"><label class="lbl" for="f-hravg">Avg BPM</label><input type="number" id="f-hravg" min="40" max="230" inputmode="numeric" placeholder="0"></div>
+              <div class="field"><label class="lbl" for="f-hrmax">Max BPM</label><input type="number" id="f-hrmax" min="40" max="230" inputmode="numeric" placeholder="0"></div>
+              <div class="field"><label class="lbl" for="f-kcal">Calories</label><input type="number" id="f-kcal" min="0" max="3000" inputmode="numeric" placeholder="0"></div>
+            </div>
+            <p style="font-size:.74rem;color:var(--muted);margin-top:9px;line-height:1.45;">Read these off the Apple Watch workout summary. A web page cannot pull them from Apple Health directly &mdash; see More &rarr; Apple Watch for why, and what the automated route would take.</p>
+          </div>
+        </details>
+
+        <div class="field">
+          <label class="lbl" for="f-result">Result / benchmark <span style="text-transform:none;letter-spacing:0;font-weight:400;">(optional)</span></label>
+          <input type="text" id="f-result" placeholder="e.g. Half sim 44:20 &middot; full sim 1:52:30">
+        </div>
+        <div class="field">
+          <label class="lbl" for="f-notes">Notes</label>
+          <textarea id="f-notes" placeholder="How it felt, anything sore, what to change next time"></textarea>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn primary" id="f-save">Save session</button>
+          <button class="btn ghost" id="f-skip">Mark as skipped</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-head"><span class="lbl">This week</span><span class="hr"></span></div>
+    <div class="card"><div id="t-week"></div></div>
+  </div>
+
+  <!-- ===== LOG ===== -->
+  <div class="view" id="v-log">
+    <h2>Training log</h2>
+    <p class="sub" id="l-summary">&mdash;</p>
+    <div class="card" style="margin-top:14px;"><div id="l-list"></div></div>
+  </div>
+
+  <!-- ===== MOVES ===== -->
+  <div class="view" id="v-moves">
+    <h2>The eight stations</h2>
+    <p class="sub">Tap any one for the movement standard, the rule points, and what gets you no-repped. Loads shown are Men's Open.</p>
+    <div class="moves" style="margin-top:16px;" id="mv-grid"></div>
+    <div class="section-head"><span class="lbl">Your loads</span><span class="hr"></span></div>
+    <div class="card"><div id="mv-loads"></div></div>
+  </div>
+
+  <!-- ===== PROGRESS ===== -->
+  <div class="view" id="v-prog">
+    <h2>Progress</h2>
+    <p class="sub">Everything here is computed from what you logged.</p>
+    <div class="stats" style="margin-top:14px;" id="p-stats"></div>
+
+    <div class="section-head"><span class="lbl">Weekly minutes</span><span class="hr"></span></div>
+    <div class="card">
+      <div class="chartwrap" id="p-vol-wrap"><svg class="chart" id="p-vol" role="img" aria-label="Training minutes per week"></svg></div>
+      <div class="empty" id="p-vol-empty" hidden>Bars appear here as you save sessions.<br>One per week, so the shape of your training shows up fast.</div>
+      <p class="chart-cap" id="p-vol-cap">Solid bars are logged weeks. Faint bars are weeks with no sessions.</p>
+    </div>
+
+    <div class="section-head"><span class="lbl">Benchmarks</span><span class="hr"></span></div>
+    <div class="card">
+      <div class="chartwrap" id="p-bench-wrap"><svg class="chart" id="p-bench" role="img" aria-label="Benchmark session times"></svg></div>
+      <div class="empty" id="p-bench-empty" hidden>Type a time like <span class="mono">44:20</span> into the result field on a simulation session.<br>Two of them and a trend line appears here. It should fall.</div>
+      <p class="chart-cap" id="p-bench-cap" hidden>Every session where you logged a time. The line should fall.</p>
+    </div>
+
+    <div class="section-head"><span class="lbl">Records</span><span class="hr"></span></div>
+    <div class="card"><div id="p-records"></div></div>
+  </div>
+
+  <!-- ===== PLAN ===== -->
+  <div class="view" id="v-plan">
+    <h2>The 37 weeks</h2>
+    <p class="sub">Tap a week to open it. Deloads are green, milestone weeks are red.</p>
+    <div class="card" style="margin-top:14px;"><div id="pl-weeks"></div></div>
+  </div>
+
+  <!-- ===== SETTINGS ===== -->
+  <div class="view" id="v-set">
+    <h2>Settings &amp; data</h2>
+    <div class="card" style="margin-top:14px;">
+      <div class="settings-row">
+        <div class="t"><b>Where your data lives</b><span id="s-syncdesc">&mdash;</span></div>
+      </div>
+      <div class="settings-row">
+        <div class="t"><b>Export a backup</b><span>Downloads every session as a JSON file. Do this monthly.</span></div>
+        <button class="btn sm" id="s-export">Export</button>
+      </div>
+      <div class="settings-row">
+        <div class="t"><b>Import a backup</b><span>Merges a JSON file back in. Existing sessions are kept.</span></div>
+        <button class="btn sm" id="s-import">Import</button>
+        <input type="file" id="s-file" accept="application/json,.json" hidden>
+      </div>
+      <div class="settings-row">
+        <div class="t"><b>Erase everything</b><span>Wipes all logged sessions. Cannot be undone.</span></div>
+        <button class="btn sm" id="s-wipe" style="color:var(--flag);border-color:var(--flag);">Erase</button>
+      </div>
+    </div>
+    <div class="section-head"><span class="lbl">Google Sheet backend</span><span class="hr"></span></div>
+    <div class="card">
+      <div class="card-body" style="display:flex;flex-direction:column;gap:14px;">
+        <p style="font-size:.87rem;color:var(--ink-2);line-height:1.55;margin:0;">Point this at a Google Apps Script Web App and every session is written to your own spreadsheet. That gives the version you host on GitHub the same cross-device sync the Claude one has, and your data sits somewhere you own and can open in a browser.</p>
+        <div class="field">
+          <label class="lbl" for="g-url">Web app URL</label>
+          <input type="text" id="g-url" placeholder="https://script.google.com/macros/s/.../exec" spellcheck="false" autocapitalize="off">
+        </div>
+        <div class="field">
+          <label class="lbl" for="g-token">Token</label>
+          <input type="text" id="g-token" placeholder="the TOKEN you set in Code.gs" spellcheck="false" autocapitalize="off">
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn primary sm" id="g-connect">Connect &amp; test</button>
+          <button class="btn sm" id="g-push">Push all up</button>
+          <button class="btn sm" id="g-pull">Pull all down</button>
+          <button class="btn ghost sm" id="g-forget">Disconnect</button>
+        </div>
+        <div id="g-status" class="norep" style="display:none;"></div>
+        <div id="g-cspnote" class="norep" style="display:none;"></div>
+        <p style="font-size:.79rem;color:var(--muted);line-height:1.5;margin:0;">Stuck? <a href="#" id="g-open" style="color:var(--accent-ink);">Open the URL in a new tab</a> and see what Google sends back. <b>JSON</b> means the deployment is public and working. A <b>sign-in page</b> or a <b>404</b> means "Who has access" is not set to Anyone, or you copied a URL from a deployment that no longer exists.</p>
+        <p style="font-size:.76rem;color:var(--muted);line-height:1.5;margin:0;">These two values are stored in this browser only &mdash; they are never written into the page, so the copy in your GitHub repo carries no secrets. You will paste them once on each device you train from.</p>
+      </div>
+    </div>
+
+    <details class="fold" style="margin-top:12px;">
+      <summary>How to set the sheet up &mdash; five steps</summary>
+      <div class="fbody" style="font-size:.87rem;color:var(--ink-2);line-height:1.6;">
+        <ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:9px;">
+          <li>Make a new Google Sheet. Call it anything.</li>
+          <li>In it: <b>Extensions &rarr; Apps Script</b>. Delete whatever is in the editor and paste in the <b>Code.gs</b> file you were sent.</li>
+          <li>Near the top, change <b>TOKEN</b> to any random string of your own. Save.</li>
+          <li><b>Deploy &rarr; New deployment &rarr; Web app.</b> Set <b>Execute as: Me</b> and <b>Who has access: Anyone</b>. Authorise it when Google asks &mdash; it will warn you the app is unverified, which is expected for your own script. Copy the <b>/exec</b> URL it gives you.</li>
+          <li>Paste that URL and your token above, then hit <b>Connect &amp; test</b>, then <b>Push all up</b>. Open the sheet and your sessions will be sitting in it.</li>
+        </ol>
+        <p style="margin:12px 0 0;color:var(--muted);font-size:.8rem;">"Anyone" is required because your browser calls the script without signing in &mdash; the token is what keeps it yours. Treat the URL and token like a password: anyone holding both can read and write your log.</p>
+      </div>
+    </details>
+
+    <div class="section-head"><span class="lbl">Apple Watch</span><span class="hr"></span></div>
+    <div class="card"><div class="card-body" style="font-size:.88rem;color:var(--ink-2);line-height:1.6;display:flex;flex-direction:column;gap:12px;">
+      <p style="margin:0;"><strong>Automatic sync is not possible from a web page.</strong> Apple Health data is only reachable through HealthKit, and HealthKit is only available to a native iOS app installed on the phone. There is no web API, on any browser, by design &mdash; so neither this page nor anything hosted on your own domain can read your watch directly.</p>
+      <p style="margin:0;">Three routes actually exist, in increasing order of effort:</p>
+      <div class="stationlog">
+        <div class="slrow" style="grid-template-columns:1fr;padding:12px 14px;"><div class="nm">1 &middot; Type it in<em style="margin-top:3px;">Three numbers off the workout summary, ten seconds. Already built &mdash; open <b>Heart rate &amp; calories</b> under the session form. This is the one that survives contact with a Tuesday morning.</em></div></div>
+        <div class="slrow" style="grid-template-columns:1fr;padding:12px 14px;"><div class="nm">2 &middot; An iOS Shortcut<em style="margin-top:3px;">Shortcuts can read your latest workout and copy avg HR, max HR and calories to the clipboard. One tap on the watch or phone, then paste. Free, and about twenty minutes to set up.</em></div></div>
+        <div class="slrow" style="grid-template-columns:1fr;padding:12px 14px;"><div class="nm">3 &middot; Health Auto Export into the same sheet<em style="margin-top:3px;">The only genuinely automatic route, and once your Google Sheet backend is connected the hard part is already done. The Health Auto Export app posts your workouts as JSON to a REST endpoint on a schedule &mdash; that endpoint can be the same Apps Script URL, writing heart rate straight into a second tab. Say the word and I will add the handler. Cost is the app plus an afternoon.</em></div></div>
+      </div>
+      <p style="margin:0;color:var(--muted);font-size:.82rem;">Worth knowing: your watch is GPS-only, so treadmill distance comes from arm swing and will drift from the belt reading. Trust the treadmill for distance and the watch for heart rate.</p>
+    </div></div>
+
+    <div class="section-head"><span class="lbl">Race loads &mdash; Men's Open</span><span class="hr"></span></div>
+    <div class="card"><div class="card-body" style="font-size:.87rem;color:var(--ink-2);line-height:1.6;">
+      <p style="margin:0 0 10px;">SkiErg <b class="mono">1000&nbsp;m</b> &middot; Sled push <b class="mono">152&nbsp;kg</b> incl. sled &middot; Sled pull <b class="mono">103&nbsp;kg</b> incl. sled &middot; Burpee broad jump <b class="mono">80&nbsp;m</b> &middot; Row <b class="mono">1000&nbsp;m</b> &middot; Farmers carry <b class="mono">200&nbsp;m @ 2&times;24&nbsp;kg</b> &middot; Sandbag lunge <b class="mono">100&nbsp;m @ 20&nbsp;kg</b> &middot; Wall balls <b class="mono">100 &times; 6&nbsp;kg</b> to a <b class="mono">3.05&nbsp;m</b> target.</p>
+      <p style="margin:0;color:var(--muted);font-size:.82rem;">Some training sites list Open sled push as 102&nbsp;kg &mdash; that is the <em>women's</em> Open figure. Men's Open is 152&nbsp;kg. Source: HYROX Season 26/27 Singles Rulebook.</p>
+    </div></div>
+  </div>
+
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-title">
+    <div class="scrim" data-close></div>
+    <div class="panel">
+      <div class="grab"></div>
+      <div class="phead">
+        <div><h3 id="sh-title">&mdash;</h3><span class="sub mono" id="sh-std">&mdash;</span></div>
+        <button class="close" data-close aria-label="Close">&times;</button>
+      </div>
+      <svg class="big" id="sh-svg" viewBox="0 0 140 140" aria-hidden="true"></svg>
+      <div class="pbody">
+        <div><h4 class="lbl" style="margin-bottom:8px;">Movement standard</h4><ul class="rulelist" id="sh-rules"></ul></div>
+        <div class="norep" id="sh-norep"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<nav class="tabs" role="tablist">
+  <button role="tab" aria-selected="true" data-v="today"><svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="5"/></svg>Today</button>
+  <button role="tab" aria-selected="false" data-v="log"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>Log</button>
+  <button role="tab" aria-selected="false" data-v="moves"><svg viewBox="0 0 24 24"><circle cx="12" cy="4.5" r="2"/><path d="M12 6.5v6M12 12.5l-3.5 8M12 12.5l3.5 8M6 9l6-1.5L18 9"/></svg>Moves</button>
+  <button role="tab" aria-selected="false" data-v="prog"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Stats</button>
+  <button role="tab" aria-selected="false" data-v="plan"><svg viewBox="0 0 24 24"><path d="M4 5h16v15H4z"/><path d="M4 9h16M9 5v15"/></svg>Plan</button>
+  <button role="tab" aria-selected="false" data-v="set"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg>More</button>
+</nav>
+
+<script id="seed-data" type="application/json">{"v":1,"sessions":[]}</script>
+
+<script>
+/* ============================================================
+   ROXLOG — HYROX training tracker
+   Works three ways, in this order of preference:
+   1. Published Claude artifact  -> syncs across every device
+   2. Static hosting / local file -> localStorage on that browser
+   Either way, Export/Import JSON keeps your data portable.
+   ============================================================ */
+(function(){
+"use strict";
+
+/* ---------- program ---------- */
+var START = "2026-08-31";           // Monday of week 1
+var RACE  = "2027-05-12";
+var LS_KEY = "roxlog.v1";
+var DATA_PATH = "data/roxlog.json";
+
+function W(wk,phase,budget,days,note,flag){return {wk:wk,phase:phase,budget:budget,days:days,note:note||"",flag:flag||""};}
+
+var PRIMER = "Primer <b>4 min</b>: walking hamstring sweeps 40s &middot; lateral lunge + knee drive 8/side &middot; 10 light band rows &middot; 20 air squats";
+
+var PROG = [
+W(1,"Groove","10 min &times;3 + 20 Sat",{
+ Mon:["<b>1 km</b> treadmill, zone 2 &mdash; you can hold a conversation","<b>3 &times; 15</b> wall balls @ 6 kg, 60 s rest"],
+ Wed:["<b>1 km</b> zone 2","<b>3 &times; 15</b> wall balls @ 6 kg"],
+ Fri:["<b>1 km</b> zone 2","<b>3 &times; 15</b> wall balls @ 6 kg"],
+ Sat:["<b>2 km</b> zone 2, continuous","<b>4 &times; 15</b> wall balls @ 6 kg"]},
+ "Wall balls only, all week. Hip crease below the knee, stand fully tall before every throw. Film one set from the side &mdash; you will be shallower than you think."),
+
+W(2,"Groove","20 min &times;3 + 25 Sat",{
+ Mon:["<b>1 km</b> zone 2","Sled push <b>4 &times; 12.5 m @ 60 kg</b> total, walk back between","<b>2 &times; 20</b> wall balls"],
+ Wed:["<b>1 km</b> zone 2","<b>4 &times; 20</b> wall balls","Sled push <b>2 &times; 12.5 m @ 60 kg</b>"],
+ Fri:["<b>2 km</b> zone 2, continuous"],
+ Sat:["<b>2 km</b> zone 2","<b>100</b> wall balls in sets of 20","Sled push <b>4 &times; 12.5 m @ 60 kg</b>"]},
+ "60 kg will feel absurdly light. Good. The sled destroys calves and Achilles before anything else &mdash; low hips, straight arms, short choppy steps, never stop mid-lane."),
+
+W(3,"Groove","20 min &times;3 + 30 Sat",{
+ Mon:["<b>1 km</b> zone 2","Sled push <b>50 m @ 75 kg</b>","Burpee broad jump <b>20 m</b>, unhurried"],
+ Wed:["<b>1 km</b> zone 2","<b>50</b> wall balls","BBJ <b>20 m</b>"],
+ Fri:["<b>2 km</b> zone 2, continuous"],
+ Sat:["<b>3 km</b> zone 2","BBJ <b>40 m</b>","<b>60</b> wall balls","Sled push <b>50 m @ 75 kg</b>"]},
+ "Burpee broad jumps this week. Chest and thighs to the floor, both feet leave and land together. Jump distance is worth far less than jump rhythm."),
+
+W(4,"Groove","30 min &times;3 + 35 Sat",{
+ Mon:["<b>1 km</b>","Sled push <b>50 m @ 90 kg</b>","BBJ <b>30 m</b>"],
+ Wed:["<b>1 km</b>","Sandbag lunge <b>50 m @ 15 kg</b>","<b>50</b> wall balls"],
+ Fri:["<b>3 km</b> zone 2, continuous"],
+ Sat:["<b>2 km</b> &middot; sled push <b>50 m</b> &middot; <b>1 km</b> &middot; BBJ <b>40 m</b> &middot; <b>1 km</b> &middot; lunge <b>50 m</b> &middot; <b>60</b> wall balls"]},
+ "Sandbag lunges arrive. The trailing knee taps the floor, it does not slam. Two sore sessions in a row means drop lunges for a week and return at 10 kg."),
+
+W(5,"Build","30 min &times;3 + 40 Sat",{
+ Mon:["<b>1 km</b>","Sled pull <b>50 m @ 55 kg</b> &mdash; new","Sled push <b>50 m @ 90 kg</b>"],
+ Wed:["<b>4 rounds</b>, no rest between run and station: <b>500 m</b> + 25 wall balls / BBJ 20 m / lunge 40 m / 25 wall balls"],
+ Fri:["<b>3 km</b> zone 2, continuous"],
+ Sat:["<b>4 &times;</b> [<b>1 km</b> + one station at half volume]"]},
+ "From here you never rest between the run and the station. That gap is the roxzone and it costs the average racer six to eight minutes across a race."),
+
+W(6,"Build","40 min &times;3 + 45 Sat",{
+ Mon:["<b>1 km</b>","Sled push <b>50 m @ 105 kg</b>","<b>1 km</b>","Sled pull <b>50 m @ 70 kg</b>"],
+ Wed:["<b>1 km</b>","Farmers carry <b>100 m @ 2&times;24 kg</b> &mdash; new","<b>1 km</b>","Farmers carry <b>100 m</b>"],
+ Fri:["<b>4 km</b> zone 2 &mdash; outdoors if you can"],
+ Sat:["<b>4 &times;</b> [<b>1 km</b> + station]: sled push, BBJ 40 m, lunge 60 m, 60 wall balls"]},
+ "Farmers carry is a grip and posture station, not a strength one. Chest up, do not shrug, set the bells down deliberately &mdash; dropping them is a penalty on race day."),
+
+W(7,"Build","40 min &times;3 + 50 Sat",{
+ Mon:["<b>1 km</b>","Sled push <b>50 m @ 120 kg</b>","<b>1 km</b>","Sled pull <b>50 m @ 85 kg</b>"],
+ Wed:["<b>1 km</b>","Ski or substitute <b>1000 m</b>","<b>1 km</b>","Row or substitute <b>1000 m</b>","Farmers carry <b>150 m</b>"],
+ Fri:["<b>5 &times; 800 m</b> at easy pace, 60 s walk between"],
+ Sat:["<b>5 &times;</b> [<b>1 km</b> + station]: ski, sled push, sled pull, BBJ 60 m, 80 wall balls"]},
+ "Deadline week: you need a real rower and SkiErg sorted by Sunday. Substitutes are roughly 60% effective and the gap compounds from here.","warn"),
+
+W(8,"Build","Deload &mdash; half volume all week",{
+ Mon:["<b>2 km</b> zone 2","<b>40</b> wall balls, unhurried"],
+ Wed:["<b>3 km</b> zone 2, continuous"],
+ Fri:["<b>2 km</b> zone 2","Farmers carry <b>100 m</b>","Lunge <b>40 m</b>"],
+ Sat:["<b>5 km</b> zone 2 outdoors. No stations."]},
+ "Every fourth week is a deload. You already train six days &mdash; without this you find the injury instead of the fitness. Do not feel good and add a bit.","dl"),
+
+W(9,"Build","50 min &times;3 + 60 Sat",{
+ Mon:["<b>1 km</b>","Sled push <b>50 m @ 135 kg</b>","<b>1 km</b>","Sled pull <b>50 m @ 95 kg</b>","<b>1 km</b>"],
+ Wed:["<b>1 km</b>","Ski <b>1000 m</b>","<b>1 km</b>","Row <b>1000 m</b>","<b>1 km</b>"],
+ Fri:["<b>6 &times; 800 m</b> slightly quicker than easy, 60 s walk between"],
+ Sat:["<b>HALF HYROX &mdash; front four.</b> 4 &times; [1 km + station] at race loads: ski, sled push, sled pull, BBJ 80 m. <b>Time it.</b>"]},
+ "Write the half-HYROX time in the result field. It is the number every future session gets measured against.","ms"),
+
+W(10,"Build","60 min &times;3 + 70 Sat",{
+ Mon:["<b>1 km</b>","Sled push <b>50 m @ 152 kg</b> &mdash; race weight, first time","<b>1 km</b>","Sled pull <b>50 m @ 103 kg</b>"],
+ Wed:["<b>1 km</b>","Farmers carry <b>200 m</b>","<b>1 km</b>","Lunge <b>100 m @ 20 kg</b>","<b>1 km</b>","<b>100</b> wall balls"],
+ Fri:["<b>6 km</b> zone 2 outdoors &mdash; get off the treadmill from here"],
+ Sat:["<b>HALF HYROX &mdash; back four.</b> 4 &times; [1 km + station]: row, carry 200 m, lunge 100 m, 100 wall balls. <b>Time it.</b>"]},
+ "Every station has now been done at full race load and full race volume &mdash; just not all in one go.","ms"),
+
+W(11,"Full distance","60 min &times;3 + 75 Sat",{
+ Mon:["Sled day at race weight &middot; <b>3 km</b> total running"],
+ Wed:["Erg + carry day &middot; <b>3 km</b> total running"],
+ Fri:["<b>8 &times; 400 m</b> brisk, 90 s walk between"],
+ Sat:["<b>5 km + 5 stations</b> in race order, race loads"]},""),
+
+W(12,"Full distance","60 min &times;3 + 90 Sat",{
+ Mon:["Sled day &middot; <b>3 km</b>"],
+ Wed:["Wall balls + lunges, done fatigued &middot; <b>3 km</b>"],
+ Fri:["<b>7 km</b> zone 2 outdoors"],
+ Sat:["<b>6 km + 6 stations</b> in race order"]},""),
+
+W(13,"Full distance","Deload &mdash; you will need it",{
+ Mon:["<b>3 km</b> zone 2","Technique only, no load"],
+ Wed:["<b>4 km</b> zone 2"],
+ Fri:["Rest or walk"],
+ Sat:["<b>5 km</b> zone 2 outdoors, nothing else"]},
+ "One week out from the full simulation. This week exists so you arrive at it fresh, not brave.","dl"),
+
+W(14,"Full distance","Saturday: the whole thing",{
+ Mon:["<b>3 km</b> zone 2","Light technique on wall balls and BBJ"],
+ Wed:["<b>4 &times; 400 m</b> brisk, nothing heavy"],
+ Fri:["Rest. Genuinely rest."],
+ Sat:["<b>FULL HYROX SIMULATION.</b> 8 km, 8 stations, race order, race loads, clock running."]},
+ "Expect 1:40 to 2:00 &mdash; a normal, good first full simulation. Pace the first kilometre 45 s slower than feels right; going out fast is the single most common way to blow up.","ms"),
+
+W(15,"Full distance","Recovery",{
+ Mon:["<b>3 km</b> zone 2"],
+ Wed:["<b>4 km</b> zone 2"],
+ Fri:["Rest"],
+ Sat:["<b>5 km</b> easy outdoors. No stations."]},
+ "Full recovery week. Then decide on HYROX Noida, 15–17 Jan 2027 — one real race before your goal race is worth three months of training.","dl"),
+
+W(16,"Full distance","Repair the weak two",{
+ Mon:["Weakest station from the simulation, at volume &middot; <b>2 km</b>"],
+ Wed:["Second weakest station &middot; <b>2 km</b>"],
+ Fri:["<b>5 &times; 1 km</b> at target race pace, 90 s rest"],
+ Sat:["<b>5 km + 5 stations</b>, weak stations included"]},
+ "Whatever hurt most in the simulation gets double the attention from here to May."),
+
+W(17,"Sharpen","Threshold block",{
+ Mon:["Sled + BBJ at race loads &middot; <b>3 km</b>"],
+ Wed:["<b>5 &times; 1 km</b> at target race pace, 90 s rest"],
+ Fri:["Erg + carry + wall balls &middot; <b>3 km</b>"],
+ Sat:["<b>Half HYROX, timed.</b> Beat week 9."]},""),
+
+W(18,"Sharpen","Threshold block",{
+ Mon:["Sled day &middot; <b>4 km</b>"],
+ Wed:["<b>6 &times; 1 km</b> at race pace, 90 s rest"],
+ Fri:["Stations circuit, EMOM format &middot; <b>3 km</b>"],
+ Sat:["<b>6 km + 6 stations</b> at race pace"]},""),
+
+W(19,"Sharpen","Sharpen into Noida",{
+ Mon:["Light sled &middot; <b>3 km</b>"],
+ Wed:["<b>4 &times; 1 km</b> at race pace"],
+ Fri:["Roxzone drill: 8 transitions under 45 s each"],
+ Sat:["<b>Half HYROX</b> at goal pace, not maximal"]},""),
+
+W(20,"Sharpen","RACE WEEK &mdash; Noida",{
+ Mon:["<b>3 km</b> easy"],
+ Wed:["<b>3 &times; 400 m</b> at race pace, then stop"],
+ Fri:["Travel. 15 min movement flush."],
+ Sat:["<b>HYROX NOIDA</b> &mdash; race it as a rehearsal, not for a PB. Log the split sheet."]},
+ "Race it to learn the start pen, the roxzone, the judging and the pacing panic somewhere that does not matter.","ms"),
+
+W(21,"Sharpen","Recover",{
+ Mon:["Rest"],Wed:["<b>4 km</b> zone 2"],Fri:["Rest or walk"],Sat:["<b>6 km</b> zone 2 outdoors"]},
+ "Then read your Noida splits honestly. The two slowest stations set the next eight weeks.","dl"),
+
+W(22,"Sharpen","Rebuild on the race data",{
+ Mon:["Weakest station from Noida &middot; <b>3 km</b>"],
+ Wed:["<b>6 &times; 1 km</b> at race pace"],
+ Fri:["Second weakest station &middot; <b>3 km</b>"],
+ Sat:["<b>6 km + 6 stations</b>"]},""),
+
+W(23,"Sharpen","Roxzone block",{
+ Mon:["Sled at race weight, transitions timed &middot; <b>4 km</b>"],
+ Wed:["<b>8 &times; 600 m</b> at race pace, 60 s rest"],
+ Fri:["Full station circuit, every transition under 45 s"],
+ Sat:["<b>7 km + 7 stations</b>"]},""),
+
+W(24,"Sharpen","Deload",{
+ Mon:["<b>4 km</b> zone 2"],Wed:["<b>4 &times; 800 m</b> easy"],Fri:["Rest"],Sat:["<b>6 km</b> zone 2"]},"","dl"),
+
+W(25,"Sharpen","Volume block",{
+ Mon:["Sled + carries heavy &middot; <b>4 km</b>"],
+ Wed:["<b>10 km</b> steady &mdash; longest run of the plan"],
+ Fri:["Erg + wall balls fatigued &middot; <b>3 km</b>"],
+ Sat:["<b>FULL HYROX, timed.</b> Target 10 min faster than week 14."]},"","ms"),
+
+W(26,"Sharpen","Volume block",{
+ Mon:["Sled day &middot; <b>4 km</b>"],
+ Wed:["<b>6 &times; 1 km</b> at race pace, 75 s rest"],
+ Fri:["Stations circuit &middot; <b>4 km</b>"],
+ Sat:["<b>6 km + 6 stations</b> at goal pace"]},""),
+
+W(27,"Sharpen","Volume block",{
+ Mon:["Sled + BBJ &middot; <b>4 km</b>"],
+ Wed:["<b>12 &times; 400 m</b> faster than race pace, 60 s rest"],
+ Fri:["Carry + lunge + wall balls &middot; <b>4 km</b>"],
+ Sat:["<b>7 km + 7 stations</b>"]},""),
+
+W(28,"Sharpen","Deload",{
+ Mon:["<b>4 km</b> zone 2"],Wed:["<b>5 &times; 600 m</b> easy"],Fri:["Rest"],Sat:["<b>7 km</b> zone 2"]},"","dl"),
+
+W(29,"Sharpen","Peak volume",{
+ Mon:["Sled heavy &middot; <b>5 km</b>"],
+ Wed:["<b>8 &times; 1 km</b> at race pace, 60 s rest"],
+ Fri:["Full station circuit &middot; <b>4 km</b>"],
+ Sat:["<b>FULL HYROX</b> at goal pace, not maximal"]},""),
+
+W(30,"Sharpen","Peak volume",{
+ Mon:["Sled + carries &middot; <b>5 km</b>"],
+ Wed:["<b>12 km</b> steady"],
+ Fri:["Wall balls + lunges fatigued &middot; <b>4 km</b>"],
+ Sat:["<b>7 km + 7 stations</b> at race pace"]},""),
+
+W(31,"Sharpen","Peak volume",{
+ Mon:["Sled at 165 kg &mdash; overload &middot; <b>4 km</b>"],
+ Wed:["<b>6 &times; 1 km</b> faster than race pace"],
+ Fri:["Roxzone drill, all 8 transitions"],
+ Sat:["<b>FULL HYROX, timed.</b> This is your predictor."]},"","ms"),
+
+W(32,"Peak","Deload before the peak block",{
+ Mon:["<b>4 km</b> zone 2"],Wed:["<b>5 &times; 600 m</b> easy"],Fri:["Rest"],Sat:["<b>8 km</b> zone 2"]},"","dl"),
+
+W(33,"Peak","Race-pace quality",{
+ Mon:["Sled at race weight, fast &middot; <b>4 km</b>"],
+ Wed:["<b>8 &times; 1 km</b> at goal race pace"],
+ Fri:["Station circuit at race pace &middot; <b>3 km</b>"],
+ Sat:["<b>6 km + 6 stations</b> at goal pace"]},""),
+
+W(34,"Peak","Final full simulation",{
+ Mon:["<b>4 km</b> easy","Light technique"],
+ Wed:["<b>4 &times; 400 m</b> at race pace"],
+ Fri:["Rest"],
+ Sat:["<b>FINAL FULL HYROX SIMULATION.</b> This time predicts race day within a few minutes."]},
+ "Whatever this reads, that is your race plan. Do not gamble on a faster first kilometre in May.","ms"),
+
+W(35,"Peak","Taper &mdash; volume down 30%",{
+ Mon:["<b>3 km</b> easy","Light sled, 2 lengths"],
+ Wed:["<b>5 &times; 600 m</b> at race pace"],
+ Fri:["<b>3 km</b> easy"],
+ Sat:["<b>4 km + 4 stations</b>, comfortable"]},
+ "Confirm kit this week: cross-trainers not running shoes, socks that do not slip, race belt, and the exact nutrition you will use on race day."),
+
+W(36,"Peak","Taper &mdash; volume down 55%",{
+ Mon:["<b>3 km</b> easy"],
+ Wed:["<b>4 &times; 400 m</b> at race pace"],
+ Fri:["<b>2 km</b> easy + 20 wall balls"],
+ Sat:["Rest or 20 min walk. Travel to Bengaluru."]},""),
+
+W(37,"Peak","RACE WEEK",{
+ Mon:["<b>3 km</b> very easy"],
+ Wed:["<b>RACE DAY WINDOW</b> &mdash; HYROX Bengaluru, BIEC Hall 4"],
+ Fri:["Race or recover, depending on your heat"],
+ Sat:["Race or recover"]},
+ "Nothing heavy after Monday. Arrive early, walk the course, warm up properly, and run the first kilometre slower than everyone around you.","ms")
+];
+
+var RPE_DESC = {1:"Barely moving",2:"Very easy",3:"Easy, all-day pace",4:"Comfortable",5:"Steady, breathing noticed",
+6:"Working, could hold a short sentence",7:"Hard, a few words only",8:"Very hard, one word",9:"Almost maximal",10:"Everything you had"};
+
+var DAY_TITLES = {Mon:"Sled &amp; Push",Wed:"Pull, Carry &amp; Erg",Fri:"Compromised Run",Sat:"Long Session"};
+var DAYKEYS = ["Mon","Wed","Fri","Sat"];
+
+/* pose = [ankleX, ankleY, torso, thigh, shin, arm, fore]  degrees
+   The ANKLE is anchored to the floor and the body is built upward from it,
+   so squats and lunges drop the hip the way a real one does. */
+var L={torso:32,thigh:25,shin:25,arm:19,fore:19,head:7};
+var FLOOR=126;
+function R(d){return d*Math.PI/180;}
+function f(n){return (+n).toFixed(1);}
+function skel(p){
+  var ax=p[0],ay=p[1],t=R(p[2]),th=R(p[3]),sh=R(p[4]),a=R(p[5]),fo=R(p[6]);
+  var knee=[ax-L.shin*Math.sin(sh), ay-L.shin*Math.cos(sh)];
+  var hip=[knee[0]-L.thigh*Math.sin(th), knee[1]-L.thigh*Math.cos(th)];
+  var shoulder=[hip[0]+L.torso*Math.sin(t), hip[1]-L.torso*Math.cos(t)];
+  var head=[hip[0]+(L.torso+L.head*1.2)*Math.sin(t), hip[1]-(L.torso+L.head*1.2)*Math.cos(t)];
+  var elbow=[shoulder[0]+L.arm*Math.sin(a), shoulder[1]+L.arm*Math.cos(a)];
+  var hand=[elbow[0]+L.fore*Math.sin(fo), elbow[1]+L.fore*Math.cos(fo)];
+  return {an:[ax,ay],kn:knee,hip:hip,sh:shoulder,hd:head,el:elbow,hn:hand};
+}
+function lerp(a,b,u){return a.map(function(v,i){return v+(b[i]-v)*u;});}
+function ease(u){return u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;}
+
+var GND='<line x1="10" y1="126.5" x2="130" y2="126.5" stroke="#C2C5BA" stroke-width="2.5" stroke-linecap="round"/>';
+
+var MOVES={
+ ski:{sym:1,dur:2000,poses:[
+   [56,126, 8, 4,-4, 176,176],
+   [56,126,32,12,-10, 118,148],
+   [56,126,52,20,-16, 18, 24],
+   [56,126,24, 8, -6, 148,166]],
+  prop:function(s,g){return GND+'<line x1="104" y1="20" x2="104" y2="126" stroke="'+g.dim+'" stroke-width="3.5"/><line x1="'+f(s.hn[0])+'" y1="'+f(s.hn[1])+'" x2="104" y2="24" stroke="'+g.acc+'" stroke-width="1.8"/>';}},
+
+ push:{dur:1400,poses:[
+   [44,126,56,28, 6, 82,86],
+   [50,126,56,-12,24, 82,86],
+   [56,126,56,28, 6, 82,86],
+   [62,126,56,-12,24, 82,86]],
+  prop:function(s,g){return GND+'<rect x="'+f(s.hn[0]-1)+'" y="'+f(Math.min(s.hn[1]-12,88))+'" width="11" height="'+f(FLOOR-Math.min(s.hn[1]-12,88))+'" rx="2" fill="'+g.acc+'"/>';}},
+
+ pull:{sym:1,dur:1400,poses:[
+   [64,126,26,20,-18, 154,126],
+   [64,126,34,26,-22, 112, 60],
+   [64,126,26,20,-18,  56, 16],
+   [64,126,30,23,-20, 124, 98]],
+  prop:function(s,g,u){var sx=110-u*26;return GND+'<rect x="'+f(sx)+'" y="112" width="16" height="14" rx="2" fill="'+g.acc+'"/><line x1="'+f(s.hn[0])+'" y1="'+f(s.hn[1])+'" x2="'+f(sx)+'" y2="114" stroke="'+g.dim+'" stroke-width="1.8"/>';}},
+
+ bbj:{sym:1,dur:2400,poses:[
+   [44,126, 4, 4, 0,  4,  4],
+   [44,126,74,62,-56, 60, 68],
+   [44,126,86,86,-82, 92, 96],
+   [58,102,14,-22,14, 152,164],
+   [72,126, 6, 6, 0,  8,  6]],
+  prop:function(){return GND;}},
+
+ row:{sym:1,dur:2000,poses:[
+   [100,118, 26, 128, 30,  70, 80],
+   [100,118,  8, 105, 55,  78, 88],
+   [100,118,-16,  76, 74, 100,150],
+   [100,118, 12, 108, 50,  80, 92]],
+  prop:function(s,g){return '<line x1="18" y1="124" x2="112" y2="124" stroke="'+g.dim+'" stroke-width="3"/>'+
+    '<rect x="'+f(s.hip[0]-9)+'" y="'+f(s.hip[1]+4)+'" width="20" height="5" rx="2" fill="'+g.dim+'"/>'+
+    '<rect x="112" y="86" width="12" height="34" rx="3" fill="'+g.dim+'"/>'+
+    '<line x1="'+f(s.hn[0])+'" y1="'+f(s.hn[1])+'" x2="114" y2="96" stroke="'+g.acc+'" stroke-width="1.8"/>';}},
+ carry:{dur:1200,poses:[
+   [56,126, 3, 22,-20, 3, 3],
+   [56,126, 3,-16, 14, 3, 3],
+   [56,126, 3,-22, 20, 3, 3],
+   [56,126, 3, 16,-14, 3, 3]],
+  prop:function(s,g){return GND+
+    '<rect x="'+f(s.hn[0]-2)+'" y="'+f(s.hn[1]+2)+'" width="13" height="12" rx="3" fill="'+g.acc+'" opacity=".4"/>'+
+    '<rect x="'+f(s.hn[0]-7)+'" y="'+f(s.hn[1])+'" width="14" height="13" rx="3" fill="'+g.acc+'"/>';}},
+
+ lunge:{dur:2200,poses:[
+   [56,126, 8,  4,  0, 22,-10],
+   [56,126,12, 34,-32, 22,-10],
+   [56,126,14, 52,-50, 22,-10],
+   [56,126, 8,-10,  6, 22,-10]],
+  prop:function(s,g){return GND+'<rect x="'+f(s.sh[0]-17)+'" y="'+f(s.sh[1]-3)+'" width="26" height="11" rx="5" fill="'+g.acc+'"/>';}},
+
+ wb:{sym:1,dur:1800,poses:[
+   [64,126, 8,  4, -4, 148,118],
+   [64,126,32, 54,-50, 138,108],
+   [64,126,38, 74,-70, 134,104],
+   [64,126, 6, -8,  4, 174,178]],
+  prop:function(s,g,u){
+    var bx=s.hn[0]+4, by=s.hn[1];
+    if(u>0.78){var k=(u-0.78)/0.22; bx=bx+(112-bx)*k; by=by-(by-30)*k;}
+    return GND+'<line x1="118" y1="10" x2="118" y2="126" stroke="'+g.dim+'" stroke-width="2.5"/>'+
+      '<rect x="107" y="26" width="22" height="4.5" rx="2" fill="'+g.acc+'"/>'+
+      '<circle cx="'+f(bx)+'" cy="'+f(by)+'" r="9" fill="'+g.acc+'"/>';}}
+};
+
+/* ---------- stations: standards, rules, no-reps (HYROX 26/27 rulebook, Men's Open) ---------- */
+var STATIONS=[
+ {k:"ski",n:"SkiErg",std:"1,000 m",unit:"m",load:0,
+  rules:["Both feet stay on the SkiErg base plate for the whole 1,000 m. Toes may hang over the edge; a foot touching the floor is a penalty.",
+         "Only leave the machine once the monitor reads 1,000 m.",
+         "Pace the first 250 m &mdash; this station arrives with fresh arms and you need them for six more."],
+  norep:"Leaving before 1,000 m is a DQ, not a penalty. Feet off the base plate costs 15 seconds each time."},
+ {k:"push",n:"Sled Push",std:"4 &times; 12.5 m &middot; 152 kg",unit:"m",load:1,
+  rules:["The entire sled must cross the 12.5 m line before you turn.",
+         "Both you and the sled start completely behind the white line.",
+         "Stay in your assigned lane and out of your neighbour's.",
+         "Low hips, straight arms, short choppy steps. Never stop mid-lane &mdash; restarting a stationary sled costs more than pushing through."],
+  norep:"Turning early or drifting into another lane: warning first, then 15 seconds per infringement. Calves and Achilles are the injury risk here &mdash; ramp the load slowly."},
+ {k:"pull",n:"Sled Pull",std:"4 &times; 12.5 m &middot; 103 kg",unit:"m",load:1,
+  rules:["Hand over hand on the rope, staying behind the line.",
+         "The whole sled must cross the 12.5 m mark before the next lane.",
+         "Chalk is permitted here &mdash; use it.",
+         "Grip and lats are the limiter, not legs. Sit back into the rope and use bodyweight."],
+  norep:"Crossing the line while pulling: warning, then 15 seconds each. Using chalk anywhere other than sled pull and farmers carry is a penalty."},
+ {k:"bbj",n:"Burpee Broad Jump",std:"80 m",unit:"m",load:0,
+  rules:["Chest and thighs must touch the floor at the bottom of every burpee.",
+         "Both feet leave the ground together and land together on the jump.",
+         "You may jump or step out of the burpee, but the jump itself must be two-footed.",
+         "Rhythm beats power. Small consistent hops finish faster than big ones you have to recover from."],
+  norep:"15 seconds per infringement, and this is the station where most people accumulate them. If the finish line arrives mid-rep, you still owe a full burpee broad jump."},
+ {k:"row",n:"Row",std:"1,000 m",unit:"m",load:0,
+  rules:["Feet stay strapped in until the full 1,000 m is done.",
+         "You may stop and rest with the handle down, but you cannot dismount.",
+         "Legs, then body, then arms &mdash; and the reverse on the recovery.",
+         "Most first-timers blow the first 250 m. Sit two seconds per 500 m slower than you think you can hold."],
+  norep:"Leaving the rower before 1,000 m is a DQ. Feet off the footplate is 15 seconds per infringement."},
+ {k:"carry",n:"Farmers Carry",std:"200 m &middot; 2 &times; 24 kg",unit:"m",load:1,
+  rules:["Starts and ends with the kettlebells taken from and returned to the marked area.",
+         "Chest up, shoulders down, do not shrug. Grip fails before anything else.",
+         "Chalk is permitted here.",
+         "Try not to set them down &mdash; the clock runs either way, and picking them up again is expensive."],
+  norep:"Failing to return the bells to the box, or missing a lap, is a DQ. Carrying the wrong weight is also a DQ &mdash; check the colour before you start."},
+ {k:"lunge",n:"Sandbag Lunge",std:"100 m &middot; 20 kg",unit:"m",load:1,
+  rules:["The trailing knee must clearly touch the ground on every rep.",
+         "Lunges alternate &mdash; the same knee twice does not count.",
+         "Each rep ends standing tall, hips and knees fully extended.",
+         "No steps or shuffles between reps. The front foot must fully cross the line at the end of each lane.",
+         "You do not have to lunge around the turns, but each lane restarts with both feet behind the line."],
+  norep:"Warning, then 15 seconds per infringement. Shuffling between reps is the most commonly missed rule here. Knee taps the floor &mdash; it does not slam into it."},
+ {k:"wb",n:"Wall Balls",std:"100 reps &middot; 6 kg to 3.05 m",unit:"reps",load:1,
+  rules:["Start standing tall, hips and knees extended, ball in both hands. You cannot pick it up off the floor and throw it straight away.",
+         "Hips must drop below the knees at the bottom &mdash; below parallel.",
+         "The ball must strike the target inside the strike zone.",
+         "You may catch it, or let it bounce &mdash; but if it bounces you must reset to standing tall first. Catching after a bounce and continuing does not count.",
+         "Break into planned sets from rep one. 10 sets of 10 with 5 breaths beats going to failure at rep 34."],
+  norep:"Every one of these is a no-rep, and this station arrives after 7 km and seven stations. Depth is the first thing to go when you are tired &mdash; practise them fatigued, never fresh."}
+];
+var STMAP={};STATIONS.forEach(function(x){STMAP[x.k]=x;});
+
+/* ---------- date helpers ---------- */
+function iso(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function parseISO(s){var p=String(s).split("-");return new Date(+p[0],+p[1]-1,+p[2]);}
+function addDays(d,n){var x=new Date(d.getTime());x.setDate(x.getDate()+n);return x;}
+function weekStart(n){return addDays(parseISO(START),(n-1)*7);}
+function weekOf(dateStr){
+  var diff=Math.floor((parseISO(dateStr)-parseISO(START))/86400000);
+  if(diff<0) return 0;
+  return Math.floor(diff/7)+1;
+}
+function dayKey(dateStr){return ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][parseISO(dateStr).getDay()];}
+function fmt(d,opt){return d.toLocaleDateString("en-GB",opt||{day:"numeric",month:"short"});}
+function todayISO(){return iso(new Date());}
+
+/* ---------- state ---------- */
+var state={v:1,sessions:[]};
+var sync={mode:"local",api:null,busy:false};
+
+function loadSeed(){
+  try{
+    var el=document.getElementById("seed-data");
+    if(el&&el.textContent.trim()){var s=JSON.parse(el.textContent);if(s&&Array.isArray(s.sessions))return s;}
+  }catch(e){}
+  return null;
+}
+function loadLocal(){
+  try{var raw=localStorage.getItem(LS_KEY);if(raw){var s=JSON.parse(raw);if(s&&Array.isArray(s.sessions))return s;}}catch(e){}
+  return null;
+}
+function saveLocal(){try{localStorage.setItem(LS_KEY,JSON.stringify(state));}catch(e){}}
+
+function setSyncChip(txt,cls){
+  var c=document.getElementById("syncchip");
+  c.className="syncchip"+(cls?" "+cls:"");
+  document.getElementById("syncTxt").textContent=txt;
+}
+
+function persist(pushed){
+  saveLocal();
+  if(gs.on&&gs.url&&!inClaudeViewer()) return gsPushSessions(pushed||state.sessions.slice(0,1));
+  if(sync.mode!=="artifact"||!sync.api) return Promise.resolve();
+  if(sync.busy) return Promise.resolve();
+  sync.busy=true; setSyncChip("Saving","busy");
+  var payload={}; payload[DATA_PATH]=JSON.stringify(state);
+  return sync.api.publish(payload).then(function(){
+    sync.busy=false; setSyncChip("Synced","on");
+  }).catch(function(err){
+    sync.busy=false;
+    var code=(err&&err.code)||"upstream_error";
+    if(code==="conflict"){ setSyncChip("Reloading","busy"); return; }
+    sync.mode="local"; setSyncChip("This device","");
+    document.getElementById("s-syncdesc").textContent="Saved in this browser only. Cloud sync is unavailable here — export a backup regularly.";
+    toast("Saved on this device only");
+  });
+}
+
+/* ---------- google sheet backend ---------- */
+var GS_KEY="roxlog.sheet.v1";
+var gs={url:"",token:"",on:false,busy:false};
+function gsLoad(){
+  try{var raw=localStorage.getItem(GS_KEY);if(raw){var c=JSON.parse(raw);gs.url=c.url||"";gs.token=c.token||"";gs.on=!!c.on;}}catch(e){}
+}
+function gsSave(){
+  try{localStorage.setItem(GS_KEY,JSON.stringify({url:gs.url,token:gs.token,on:gs.on}));}catch(e){}
+}
+// Published Claude artifacts run under a CSP that blocks every external host,
+// so fetch() to script.google.com never leaves the page. window.claude.use only
+// exists inside that viewer, which makes it a reliable signal.
+function inClaudeViewer(){
+  return !!(typeof window.claude!=="undefined"&&window.claude&&window.claude.use);
+}
+function gsStatus(msg,bad){
+  var el=document.getElementById("g-status");
+  if(!el)return;
+  if(!msg){el.style.display="none";return;}
+  el.style.display="block";
+  el.style.background=bad?"var(--flag-soft)":"var(--accent-soft)";
+  el.innerHTML='<b style="color:'+(bad?"var(--flag)":"var(--accent-ink)")+'">'+(bad?"Problem":"Sheet")+'</b>'+msg;
+}
+// POST as text/plain so the browser sends no CORS preflight — Apps Script cannot answer OPTIONS.
+function gsPost(payload){
+  return fetch(gs.url,{
+    method:"POST",redirect:"follow",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify(Object.assign({token:gs.token},payload))
+  }).then(function(r){return r.json();});
+}
+function gsGet(){
+  var u=gs.url+(gs.url.indexOf("?")>-1?"&":"?")+"token="+encodeURIComponent(gs.token)+"&t="+Date.now();
+  return fetch(u,{method:"GET",redirect:"follow"}).then(function(r){return r.json();});
+}
+function gsPushSessions(list){
+  if(!gs.on||!gs.url||!list.length)return Promise.resolve();
+  gs.busy=true;setSyncChip("Saving","busy");
+  return gsPost({action:"upsert",sessions:list}).then(function(res){
+    gs.busy=false;
+    if(res&&res.ok){setSyncChip("Sheet","on");}
+    else{setSyncChip("Sheet offline","");gsStatus((res&&res.error)||"the sheet rejected that write.",true);}
+  }).catch(function(){
+    gs.busy=false;setSyncChip("Sheet offline","");
+  });
+}
+function gsDelete(ids){
+  if(!gs.on||!gs.url||!ids.length)return Promise.resolve();
+  return gsPost({action:"delete",ids:ids}).catch(function(){});
+}
+function gsPull(){
+  return gsGet().then(function(res){
+    if(!res||!res.ok)throw new Error((res&&res.error)||"bad response");
+    return res.sessions||[];
+  });
+}
+function stamp(s){s.updatedAt=new Date().toISOString();return s;}
+
+/* ---------- boot sync ---------- */
+function boot(){
+  gsLoad();
+  var seed=loadSeed(), local=loadLocal();
+  state = seed && seed.sessions.length ? seed : (local || seed || {v:1,sessions:[]});
+  render();
+  bindSheetUI();
+
+  var desc=document.getElementById("s-syncdesc");
+  desc.textContent="Saved in this browser. Export a backup monthly.";
+
+  // 1. a configured Google Sheet is the source of truth everywhere
+  if(gs.on&&gs.url&&!inClaudeViewer()){
+    setSyncChip("Sheet","busy");
+    desc.textContent="Synced to your Google Sheet, and cached in this browser so it still works offline.";
+    gsPull().then(function(remote){
+      var before=state.sessions.slice();
+      state=merge(state,{sessions:remote});
+      saveLocal();render();
+      setSyncChip("Sheet","on");
+      gsStatus(remote.length+" session"+(remote.length===1?"":"s")+" in the sheet.",false);
+      // push anything this device has that the sheet does not
+      var have={};remote.forEach(function(r){have[r.id]=r.updatedAt||"";});
+      var missing=before.filter(function(x){return !(x.id in have)||((x.updatedAt||"")>have[x.id]);});
+      if(missing.length)gsPushSessions(missing);
+    }).catch(function(err){
+      setSyncChip("Sheet offline","");
+      gsStatus("could not reach the sheet ("+(err&&err.message||"network")+"). Working from this browser's copy; it will sync when you reconnect.",true);
+    });
+    return;
+  }
+
+  // 2. otherwise fall back to the Claude artifact runtime
+  if(typeof window.claude==="undefined"||!window.claude||!window.claude.use){
+    setSyncChip("This device",""); return;
+  }
+  window.claude.use("artifact").then(function(api){
+    if(!api||typeof api.publish!=="function"){setSyncChip("This device","");return;}
+    return fetch(DATA_PATH,{cache:"no-store"}).then(function(r){
+      return r.ok?r.json():null;
+    }).catch(function(){return null;}).then(function(remote){
+      if(remote&&Array.isArray(remote.sessions)){
+        state=merge(state,remote);
+      }
+      sync.api=api; sync.mode="artifact";
+      setSyncChip("Synced","on");
+      desc.textContent="Synced to your Claude account — log on your phone at the gym, read it on your desktop. Export a backup monthly anyway.";
+      render();
+    });
+  }).catch(function(){setSyncChip("This device","");});
+}
+
+function bindSheetUI(){
+  var u=document.getElementById("g-url"), t=document.getElementById("g-token");
+  if(!u)return;
+  u.value=gs.url; t.value=gs.token;
+  document.getElementById("g-connect").addEventListener("click",function(){
+    gs.url=u.value.trim(); gs.token=t.value.trim();
+    if(!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec/.test(gs.url)){
+      gsStatus("that does not look like a Web App URL. It should end in <b>/exec</b>.",true);return;
+    }
+    if(inClaudeViewer()){
+      gsStatus("this copy of Roxlog is the one published on claude.ai, and published pages are sandboxed so they cannot call any outside server &mdash; the request to Google is blocked before it leaves the page. Nothing is wrong with your script. <b>The Google Sheet backend only works on the copy you host yourself</b> (GitHub Pages, or the file opened from your own machine). This version already syncs across your devices through your Claude account, so you do not need the sheet here.",true);
+      return;
+    }
+    gsStatus("testing…",false);
+    gsPull().then(function(rows){
+      gs.on=true;gsSave();
+      state=merge(state,{sessions:rows});saveLocal();render();
+      setSyncChip("Sheet","on");
+      gsStatus("connected. "+rows.length+" session"+(rows.length===1?"":"s")+" already in the sheet. Hit <b>Push all up</b> to send this device's log across.",false);
+      document.getElementById("s-syncdesc").textContent="Synced to your Google Sheet, and cached in this browser so it still works offline.";
+    }).catch(function(err){
+      gs.on=false;gsSave();
+      var m=(err&&err.message)||"";
+      if(/token/i.test(m)){
+        gsStatus("the script answered, but rejected the token. Make the <b>TOKEN</b> value at the top of Code.gs match exactly what you typed above, then redeploy.",true);
+      }else{
+        gsStatus("no answer from that URL"+(m?" ("+m+")":"")+". Check the deployment is set to <b>Execute as: Me</b> and <b>Who has access: Anyone</b>, and that you copied the <b>/exec</b> link rather than the /dev one.",true);
+      }
+    });
+  });
+  document.getElementById("g-push").addEventListener("click",function(){
+    if(!gs.on){gsStatus("connect first.",true);return;}
+    var all=state.sessions.map(function(x){return x.updatedAt?x:stamp(x);});
+    saveLocal();
+    gsStatus("pushing "+all.length+"…",false);
+    gsPost({action:"upsert",sessions:all}).then(function(res){
+      if(res&&res.ok)gsStatus("pushed. "+(res.appended||0)+" added, "+(res.updated||0)+" updated in the sheet.",false);
+      else gsStatus((res&&res.error)||"the sheet rejected that.",true);
+    }).catch(function(e){gsStatus("push failed ("+e.message+").",true);});
+  });
+  document.getElementById("g-pull").addEventListener("click",function(){
+    if(!gs.on){gsStatus("connect first.",true);return;}
+    gsStatus("pulling…",false);
+    gsPull().then(function(rows){
+      state=merge(state,{sessions:rows});saveLocal();render();
+      gsStatus("pulled "+rows.length+" from the sheet and merged.",false);
+    }).catch(function(e){gsStatus("pull failed ("+e.message+").",true);});
+  });
+  var openLink=document.getElementById("g-open");
+  if(openLink)openLink.addEventListener("click",function(ev){
+    ev.preventDefault();
+    var v=u.value.trim();
+    if(!v){gsStatus("paste the URL in first.",true);return;}
+    var sep=v.indexOf("?")>-1?"&":"?";
+    window.open(v+sep+"token="+encodeURIComponent(t.value.trim()),"_blank","noopener");
+  });
+  if(inClaudeViewer()){
+    var n=document.getElementById("g-cspnote");
+    if(n){
+      n.style.display="block";
+      n.style.background="var(--flag-soft)";
+      n.innerHTML='<b style="color:var(--flag)">Not available in this copy</b>You are looking at Roxlog published on claude.ai. Published pages are sandboxed and cannot call outside servers, so the Google Sheet connection will not work here &mdash; it is for the copy you host on GitHub Pages. This version already syncs across your devices through your Claude account.';
+    }
+  }
+  document.getElementById("g-forget").addEventListener("click",function(){
+    gs.on=false;gs.url="";gs.token="";gsSave();
+    u.value="";t.value="";
+    setSyncChip("This device","");
+    gsStatus("disconnected. Your sessions are still here and still in the sheet.",false);
+    document.getElementById("s-syncdesc").textContent="Saved in this browser. Export a backup monthly.";
+  });
+}
+
+function merge(a,b){
+  var by={};
+  (a.sessions||[]).concat(b.sessions||[]).forEach(function(s){
+    if(!s||!s.id)return;
+    var cur=by[s.id];
+    if(!cur){by[s.id]=s;return;}
+    // last write wins; a row with no stamp loses to one that has one
+    var cs=cur.updatedAt||"", ns=s.updatedAt||"";
+    if(ns>cs)by[s.id]=s;
+  });
+  var out=Object.keys(by).map(function(k){return by[k];});
+  out.sort(function(x,y){return x.date<y.date?1:x.date>y.date?-1:0;});
+  return {v:1,sessions:out};
+}
+
+/* ---------- station log rows ---------- */
+function buildStationRows(){
+  var el=document.getElementById("f-stations");
+  el.innerHTML='<div class="slrow head"><span>Station</span><span>Load kg</span><span>'+"Amount"+'</span><span>Time</span></div>'+
+   STATIONS.map(function(x){
+     return '<div class="slrow" data-k="'+x.k+'">'+
+       '<div class="nm">'+x.n+'<em>'+x.std.replace(/&middot;/g,"\u00b7")+'</em></div>'+
+       (x.load?'<input type="number" data-f="kg" min="0" max="400" step="0.5" inputmode="decimal" placeholder="kg" aria-label="'+x.n+' load in kg">'
+              :'<input type="number" disabled placeholder="&mdash;" aria-label="no load">')+
+       '<input type="number" data-f="amt" min="0" max="2000" step="1" inputmode="numeric" placeholder="'+x.unit+'" aria-label="'+x.n+' amount">'+
+       '<input type="text" data-f="t" inputmode="numeric" placeholder="m:ss" aria-label="'+x.n+' time">'+
+     '</div>';
+   }).join("");
+  Array.prototype.forEach.call(el.querySelectorAll(".slrow[data-k] input"),function(inp){
+    inp.addEventListener("input",function(){
+      var row=inp.closest(".slrow");
+      var any=Array.prototype.some.call(row.querySelectorAll("input"),function(i){return i.value.trim()!=="";});
+      row.classList.toggle("filled",any);
+    });
+  });
+}
+function collectStations(){
+  var out=[];
+  Array.prototype.forEach.call(document.querySelectorAll("#f-stations .slrow[data-k]"),function(row){
+    var k=row.getAttribute("data-k");
+    var kg=row.querySelector('[data-f=kg]'), amt=row.querySelector('[data-f=amt]'), t=row.querySelector('[data-f=t]');
+    var o={k:k};
+    if(kg&&!kg.disabled&&kg.value.trim()!=="")o.kg=parseFloat(kg.value);
+    if(amt&&amt.value.trim()!=="")o.amt=parseFloat(amt.value);
+    if(t&&t.value.trim()!=="")o.t=t.value.trim();
+    if(o.kg!=null||o.amt!=null||o.t!=null)out.push(o);
+  });
+  return out;
+}
+function clearStationRows(){
+  Array.prototype.forEach.call(document.querySelectorAll("#f-stations .slrow[data-k]"),function(row){
+    Array.prototype.forEach.call(row.querySelectorAll("input"),function(i){i.value="";});
+    row.classList.remove("filled");
+  });
+  var f=document.getElementById("f-stationfold");if(f)f.open=false;
+  var h=document.getElementById("f-hrfold");if(h)h.open=false;
+}
+
+/* ---------- today ---------- */
+var selectedDate=todayISO();
+
+function prescription(dateStr){
+  var wk=weekOf(dateStr), dk=dayKey(dateStr);
+  if(wk<1){
+    return {wk:0,dk:dk,phase:"Intro",budget:"10 min",
+      title:"Intro session",
+      items:["<b>1 km</b> treadmill, easy — conversation pace the whole way","<b>3 &times; 15</b> wall balls @ 6 kg, 60 s rest","Film one set from the side and check your depth"],
+      note:"The programme proper starts Monday 31 August. These two sessions exist only to learn the wall ball before week 1.",flag:""};
+  }
+  if(wk>PROG.length) return {wk:wk,dk:dk,phase:"Done",budget:"—",title:"Beyond the plan",items:["Race is behind you. Log whatever you did."],note:"",flag:""};
+  var w=PROG[wk-1];
+  var items=w.days[dk];
+  if(!items) return {wk:wk,dk:dk,phase:w.phase,budget:w.budget,title:"Rest day",
+    items:["No HYROX block today.",(dk==="Tue"||dk==="Thu")?"Your regular gym session only.":"Rest, or a 30 minute walk."],
+    note:w.note,flag:w.flag,rest:true};
+  return {wk:wk,dk:dk,phase:w.phase,budget:w.budget,title:DAY_TITLES[dk]||"Session",items:[PRIMER].concat(items),note:w.note,flag:w.flag};
+}
+
+function renderToday(){
+  var p=prescription(selectedDate);
+  var d=parseISO(selectedDate);
+  document.getElementById("t-date").textContent=d.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});
+  document.getElementById("t-title").innerHTML=p.title;
+
+  var meta=[];
+  meta.push('<span class="chip acc">Week '+(p.wk||0)+'</span>');
+  meta.push('<span class="chip">'+p.phase+'</span>');
+  if(p.budget&&p.budget!=="—") meta.push('<span class="chip">'+p.budget+'</span>');
+  if(p.flag==="dl") meta.push('<span class="chip acc">Deload</span>');
+  if(p.flag==="ms") meta.push('<span class="chip warn">Milestone</span>');
+  if(p.flag==="warn") meta.push('<span class="chip warn">Deadline</span>');
+  var logged=state.sessions.filter(function(s){return s.date===selectedDate;});
+  if(logged.length) meta.push('<span class="chip gold">Logged</span>');
+  document.getElementById("t-meta").innerHTML=meta.join("");
+
+  var ul=document.getElementById("t-items");
+  ul.innerHTML=p.items.map(function(t,i){
+    return '<li><label><input type="checkbox" data-i="'+i+'"><span class="txt">'+t+'</span></label></li>';
+  }).join("");
+
+  var note=document.getElementById("t-note");
+  if(p.note){note.hidden=false;note.innerHTML='<b>'+(p.flag==="warn"?"Deadline":p.flag==="dl"?"Why":p.flag==="ms"?"This one counts":"Focus")+'</b>'+p.note;}
+  else note.hidden=true;
+
+  document.getElementById("f-date").value=selectedDate;
+
+  // this week strip
+  var wk=Math.max(1,p.wk||1);
+  var w=PROG[Math.min(wk,PROG.length)-1];
+  var ws=weekStart(wk);
+  var html='';
+  DAYKEYS.forEach(function(dk){
+    if(!w.days[dk])return;
+    var offset={Mon:0,Tue:1,Wed:2,Thu:3,Fri:4,Sat:5,Sun:6}[dk];
+    var ds=iso(addDays(ws,offset));
+    var done=state.sessions.some(function(s){return s.date===ds;});
+    html+='<div class="entry" style="grid-template-columns:auto 1fr auto;cursor:pointer" data-goto="'+ds+'">'+
+      '<div class="when"><b>'+dk+'</b>'+fmt(addDays(ws,offset))+'</div>'+
+      '<div class="ttl">'+(DAY_TITLES[dk]||dk)+'</div>'+
+      '<div class="det" style="grid-column:2">'+w.days[dk].length+' item'+(w.days[dk].length>1?"s":"")+'</div>'+
+      '<div style="grid-row:span 2;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:'+(done?"var(--accent-ink)":"var(--muted)")+'">'+(done?"Done":"—")+'</div>'+
+      '</div>';
+  });
+  document.getElementById("t-week").innerHTML=html||'<div class="empty">Rest week.</div>';
+  Array.prototype.forEach.call(document.querySelectorAll("[data-goto]"),function(el){
+    el.addEventListener("click",function(){selectedDate=el.getAttribute("data-goto");resetTimer();renderToday();window.scrollTo({top:0,behavior:"smooth"});});
+  });
+}
+
+/* ---------- timer ---------- */
+var tStart=null,tAcc=0,tInt=null;
+function fmtClock(ms){var s=Math.floor(ms/1000);return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
+function tickClock(){
+  var ms=tAcc+(tStart?(Date.now()-tStart):0);
+  document.getElementById("t-clock").textContent=fmtClock(ms);
+}
+function resetTimer(){
+  tStart=null;tAcc=0;if(tInt){clearInterval(tInt);tInt=null;}
+  var c=document.getElementById("t-clock");c.textContent="00:00";c.classList.remove("run");
+  document.getElementById("t-startstop").textContent="Start";
+}
+document.getElementById("t-startstop").addEventListener("click",function(){
+  var c=document.getElementById("t-clock");
+  if(tStart){
+    tAcc+=Date.now()-tStart;tStart=null;clearInterval(tInt);tInt=null;
+    c.classList.remove("run");this.textContent="Resume";
+    document.getElementById("f-mins").value=Math.max(1,Math.round(tAcc/60000));
+  }else{
+    tStart=Date.now();tInt=setInterval(tickClock,1000);tickClock();
+    c.classList.add("run");this.textContent="Pause";
+  }
+});
+document.getElementById("t-reset").addEventListener("click",resetTimer);
+
+/* ---------- logging ---------- */
+function uid(){return "s"+Math.random().toString(36).slice(2,10)+(state.sessions.length);}
+
+function collectDone(){
+  var out=[];
+  Array.prototype.forEach.call(document.querySelectorAll("#t-items input"),function(b,i){if(b.checked)out.push(i);});
+  return out;
+}
+
+document.getElementById("f-rpe").addEventListener("input",function(){
+  document.getElementById("f-rpe-val").textContent=this.value;
+  document.getElementById("f-rpe-desc").textContent=RPE_DESC[this.value]||"";
+});
+
+function saveSession(skipped){
+  var p=prescription(document.getElementById("f-date").value||selectedDate);
+  var mins=parseInt(document.getElementById("f-mins").value,10);
+  var km=parseFloat(document.getElementById("f-km").value);
+  var s={
+    id:uid(),
+    date:document.getElementById("f-date").value||selectedDate,
+    wk:p.wk, day:p.dk, title:skipped?"Skipped":p.title,
+    mins:skipped?0:(isNaN(mins)?0:mins),
+    km:skipped?0:(isNaN(km)?0:km),
+    rpe:skipped?0:parseInt(document.getElementById("f-rpe").value,10),
+    result:document.getElementById("f-result").value.trim(),
+    notes:document.getElementById("f-notes").value.trim(),
+    done:skipped?[]:collectDone(),
+    stations:skipped?[]:collectStations(),
+    hrAvg:skipped?0:(parseInt(document.getElementById("f-hravg").value,10)||0),
+    hrMax:skipped?0:(parseInt(document.getElementById("f-hrmax").value,10)||0),
+    kcal:skipped?0:(parseInt(document.getElementById("f-kcal").value,10)||0),
+    skipped:!!skipped
+  };
+  stamp(s);
+  state.sessions.unshift(s);
+  state.sessions.sort(function(x,y){return x.date<y.date?1:x.date>y.date?-1:0;});
+  ["f-mins","f-km","f-result","f-notes","f-hravg","f-hrmax","f-kcal"].forEach(function(id){document.getElementById(id).value="";});
+  clearStationRows();
+  Array.prototype.forEach.call(document.querySelectorAll("#t-items input"),function(b){b.checked=false;});
+  resetTimer();
+  persist([s]);
+  render();
+  toast(skipped?"Marked as skipped":"Session saved");
+}
+document.getElementById("f-save").addEventListener("click",function(){saveSession(false);});
+document.getElementById("f-skip").addEventListener("click",function(){saveSession(true);});
+
+function delSession(id){
+  state.sessions=state.sessions.filter(function(s){return s.id!==id;});
+  saveLocal();
+  if(gs.on&&gs.url)gsDelete([id]);
+  else persist([]);
+  render();toast("Deleted");
+}
+
+/* ---------- log view ---------- */
+function renderLog(){
+  var el=document.getElementById("l-list");
+  if(!state.sessions.length){el.innerHTML='<div class="empty">Nothing logged yet.<br>Finish a session and hit Save.</div>';
+    document.getElementById("l-summary").textContent="No sessions yet.";return;}
+  var mins=state.sessions.reduce(function(a,s){return a+(s.mins||0);},0);
+  var km=state.sessions.reduce(function(a,s){return a+(s.km||0);},0);
+  document.getElementById("l-summary").textContent=
+    state.sessions.length+" sessions · "+Math.round(mins/60*10)/10+" hours · "+Math.round(km*10)/10+" km run";
+  el.innerHTML=state.sessions.map(function(s){
+    var d=parseISO(s.date);
+    var det=[];
+    if(s.mins)det.push(s.mins+" min");
+    if(s.km)det.push(s.km+" km");
+    if(s.rpe)det.push("RPE "+s.rpe);
+    if(s.hrAvg)det.push(s.hrAvg+" bpm avg"+(s.hrMax?" / "+s.hrMax+" max":""));
+    if(s.kcal)det.push(s.kcal+" kcal");
+    if(s.result)det.push(s.result);
+    var stn=(s.stations||[]).filter(function(x){return x.kg!=null;})
+      .map(function(x){return (STMAP[x.k]?STMAP[x.k].n:x.k)+" "+x.kg+"kg";});
+    return '<div class="entry">'+
+      '<div class="when"><b>'+d.getDate()+'</b>'+d.toLocaleDateString("en-GB",{month:"short"})+'<br>W'+s.wk+'</div>'+
+      '<div class="ttl">'+(s.title||"Session")+(s.skipped?' <span class="chip warn" style="margin-left:4px">skipped</span>':'')+'</div>'+
+      '<div class="det">'+(det.join(" · ")||"—")+
+        (stn.length?'<br><span style="color:var(--accent-ink)">'+stn.join(" · ")+'</span>':'')+
+        (s.notes?'<br><span style="font-family:Archivo,sans-serif;font-size:.78rem">'+esc(s.notes)+'</span>':'')+'</div>'+
+      '<button class="del" data-del="'+s.id+'" aria-label="Delete"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg></button>'+
+      '</div>';
+  }).join("");
+  Array.prototype.forEach.call(el.querySelectorAll("[data-del]"),function(b){
+    b.addEventListener("click",function(){delSession(b.getAttribute("data-del"));});
+  });
+}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+
+/* ---------- progress ---------- */
+function parseTime(str){
+  var m=String(str).match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if(!m)return null;
+  return m[3]?(+m[1]*3600+ +m[2]*60+ +m[3]):(+m[1]*60+ +m[2]);
+}
+function renderProgress(){
+  var ss=state.sessions.filter(function(s){return !s.skipped;});
+  var mins=ss.reduce(function(a,s){return a+(s.mins||0);},0);
+  var km=ss.reduce(function(a,s){return a+(s.km||0);},0);
+  var weeks={};ss.forEach(function(s){weeks[s.wk]=(weeks[s.wk]||0)+(s.mins||0);});
+  var wkDone=Object.keys(weeks).length;
+  var curWk=Math.max(0,weekOf(todayISO()));
+  var daysOut=Math.max(0,Math.round((parseISO(RACE)-new Date())/86400000));
+  var adherence=0;
+  if(curWk>=1){var expected=Math.min(curWk,PROG.length)*4;adherence=Math.round(ss.length/expected*100);}
+
+  document.getElementById("p-stats").innerHTML=[
+    ["Sessions",ss.length,""],
+    ["Hours",Math.round(mins/60*10)/10,""],
+    ["Km run",Math.round(km*10)/10,""],
+    ["Weeks trained",wkDone,"of "+Math.min(curWk,37)],
+    ["Adherence",(adherence||0)+"%","vs 4/week"],
+    ["Days to race",daysOut,""]
+  ].map(function(r){
+    return '<div class="stat"><span class="k">'+r[0]+'</span><span class="v">'+r[1]+(r[2]?' <small>'+r[2]+'</small>':'')+'</span></div>';
+  }).join("");
+
+  // weekly volume bars
+  var upto=Math.max(4,Math.min(37,curWk+1));
+  var vals=[];for(var i=1;i<=upto;i++)vals.push({w:i,m:weeks[i]||0});
+  var svg=document.getElementById("p-vol");
+  var Wd=680,Hd=150,pad={l:26,r:6,t:8,b:20};
+  var max=Math.max(60,Math.max.apply(null,vals.map(function(v){return v.m;})));
+  var iw=Wd-pad.l-pad.r,ih=Hd-pad.t-pad.b;
+  var bw=Math.max(2,iw/vals.length-2);
+  var out='';
+  [0,.5,1].forEach(function(f){
+    var y=pad.t+ih-ih*f;
+    out+='<line class="grid" x1="'+pad.l+'" y1="'+y+'" x2="'+(Wd-pad.r)+'" y2="'+y+'"/>';
+    out+='<text class="axlbl" x="0" y="'+(y+3)+'">'+Math.round(max*f)+'</text>';
+  });
+  vals.forEach(function(v,i){
+    var h=v.m?Math.max(3,ih*(v.m/max)):3;
+    var x=pad.l+i*(iw/vals.length)+1;
+    out+='<rect class="bar'+(v.m?"":" dim")+'" x="'+x.toFixed(1)+'" y="'+(pad.t+ih-h).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="2"><title>Week '+v.w+': '+v.m+' min</title></rect>';
+    if(v.w%6===0||v.w===1)out+='<text class="axlbl" x="'+(x+bw/2).toFixed(1)+'" y="'+(Hd-6)+'" text-anchor="middle">W'+v.w+'</text>';
+  });
+  svg.setAttribute("viewBox","0 0 "+Wd+" "+Hd);svg.innerHTML=out;
+  document.getElementById("p-vol-wrap").hidden=!wkDone;
+  document.getElementById("p-vol-empty").hidden=!!wkDone;
+  var volCap=document.getElementById("p-vol-cap");
+  volCap.hidden=!wkDone;
+  if(wkDone)volCap.textContent="Peak week so far: "+Math.max.apply(null,vals.map(function(v){return v.m;}))+" minutes. Faint bars are weeks with nothing logged.";
+
+  // benchmarks
+  var bench=ss.map(function(s){var t=parseTime(s.result);return t?{wk:s.wk,t:t,label:s.result}:null;})
+              .filter(Boolean).sort(function(a,b){return a.wk-b.wk;});
+  var b=document.getElementById("p-bench");
+  var bWrap=document.getElementById("p-bench-wrap"),bEmpty=document.getElementById("p-bench-empty"),bCap=document.getElementById("p-bench-cap");
+  if(bench.length<2){
+    bWrap.hidden=true;bEmpty.hidden=false;bCap.hidden=true;
+  }else{
+    bWrap.hidden=false;bEmpty.hidden=true;bCap.hidden=false;
+    var tmin=Math.min.apply(null,bench.map(function(p){return p.t;}));
+    var tmax=Math.max.apply(null,bench.map(function(p){return p.t;}));
+    var span=Math.max(60,tmax-tmin);
+    var bx=function(i){return pad.l+ (bench.length===1?iw/2:(i/(bench.length-1))*iw);};
+    var by=function(t){return pad.t+ih*0.075+((tmax-t)/span)*ih*0.85;};
+    var o='';
+    [0,.5,1].forEach(function(f){var y=pad.t+ih-ih*f;o+='<line class="grid" x1="'+pad.l+'" y1="'+y+'" x2="'+(Wd-pad.r)+'" y2="'+y+'"/>';});
+    o+='<polyline class="lineseries" points="'+bench.map(function(p,i){return bx(i).toFixed(1)+","+by(p.t).toFixed(1);}).join(" ")+'"/>';
+    bench.forEach(function(p,i){
+      o+='<circle class="pt" cx="'+bx(i).toFixed(1)+'" cy="'+by(p.t).toFixed(1)+'" r="4.5"><title>Week '+p.wk+': '+p.label+'</title></circle>';
+      o+='<text class="axlbl" x="'+bx(i).toFixed(1)+'" y="'+(Hd-6)+'" text-anchor="middle">W'+p.wk+'</text>';
+    });
+    o+='<text class="axlbl" x="0" y="'+(pad.t+10)+'">'+fmtClock(tmax*1000)+'</text>';
+    o+='<text class="axlbl" x="0" y="'+(pad.t+ih)+'">'+fmtClock(tmin*1000)+'</text>';
+    b.setAttribute("viewBox","0 0 "+Wd+" "+Hd);b.innerHTML=o;
+  }
+
+  // records
+  var recs=[];
+  var longest=ss.reduce(function(a,s){return (s.mins||0)>(a?a.mins:0)?s:a;},null);
+  var farthest=ss.reduce(function(a,s){return (s.km||0)>(a?a.km:0)?s:a;},null);
+  var best=bench.length?bench.reduce(function(a,p){return p.t<a.t?p:a;}):null;
+  if(longest)recs.push(["Longest session",longest.mins+" min","Week "+longest.wk]);
+  if(farthest&&farthest.km)recs.push(["Furthest run",farthest.km+" km","Week "+farthest.wk]);
+  if(best)recs.push(["Best logged time",best.label,"Week "+best.wk]);
+  var streak=0,cur=new Date();
+  for(var k=0;k<400;k++){
+    var ds=iso(addDays(cur,-k));
+    if(ss.some(function(s){return s.date===ds;})){streak++;}
+    else if(k>0&&streak>0){var dow=addDays(cur,-k).getDay();if(dow===0||dow===2||dow===4)continue;break;}
+  }
+  document.getElementById("p-records").innerHTML= recs.length?
+    recs.map(function(r){return '<div class="settings-row"><div class="t"><b>'+r[0]+'</b><span>'+r[2]+'</span></div><span class="mono" style="font-weight:700;font-size:1.05rem">'+r[1]+'</span></div>';}).join(""):
+    '<div class="empty">Records appear once you have logged a few sessions.</div>';
+}
+
+/* ---------- moves view + animation ---------- */
+var G={ink:"#181A1E",acc:"#2B6350",dim:"#C2C5BA",far:"#A7ADB5"};
+function themeColors(){
+  var cs=getComputedStyle(document.documentElement);
+  var g=function(v,fb){var x=cs.getPropertyValue(v).trim();return x||fb;};
+  return {ink:g("--ink","#181A1E"),acc:g("--accent","#2B6350"),dim:g("--line-2","#C2C5BA"),far:g("--muted","#A7ADB5")};
+}
+function poseAt(m,u){
+  var ps=m.poses,n=ps.length;
+  u=u-Math.floor(u); if(!isFinite(u)||u<0)u=0;
+  var idx=u*n, fl=Math.floor(idx), i=((fl%n)+n)%n, nx=(i+1)%n;
+  return lerp(ps[i],ps[nx],ease(idx-fl));
+}
+function drawMove(svg,k,u,col){
+  var m=MOVES[k]; if(!m)return;
+  var C=col||G;
+  var p=poseAt(m,u), sk=skel(p);
+  var pf=m.sym?[p[0]+7,p[1],p[2],p[3]+8,p[4]-6,p[5]-10,p[6]-8]:poseAt(m,(u+0.5)%1);
+  var sf=skel(pf);
+  var ln=function(a,b,w,c){return '<line x1="'+f(a[0])+'" y1="'+f(a[1])+'" x2="'+f(b[0])+'" y2="'+f(b[1])+'" stroke="'+(c||C.ink)+'" stroke-width="'+(w||3.8)+'" stroke-linecap="round"/>';};
+  var gnd='<line x1="10" y1="126.5" x2="130" y2="126.5" stroke="'+C.dim+'" stroke-width="2.5" stroke-linecap="round"/>';
+  var out=(m.prop?m.prop(sk,C,u):gnd).split("#C2C5BA").join(C.dim);
+  out+=ln(sk.hip,sf.kn,3,C.far)+ln(sf.kn,sf.an,3,C.far)+ln(sk.sh,sf.el,2.7,C.far)+ln(sf.el,sf.hn,2.7,C.far);
+  out+=ln(sk.hip,sk.sh)+ln(sk.hip,sk.kn)+ln(sk.kn,sk.an)+ln(sk.sh,sk.el,3.2)+ln(sk.el,sk.hn,3.2);
+  out+='<circle cx="'+f(sk.hd[0])+'" cy="'+f(sk.hd[1])+'" r="7.2" fill="'+C.ink+'"/>';
+  svg.innerHTML=out;
+}
+function renderMoves(){
+  document.getElementById("mv-grid").innerHTML=STATIONS.map(function(x,i){
+    return '<button class="move" data-move="'+x.k+'" type="button">'+
+      '<svg viewBox="0 0 140 140" data-k="'+x.k+'" aria-hidden="true"></svg>'+
+      '<span class="cap"><i>Station '+(i+1)+'</i><b>'+x.n+'</b><span>'+x.std+'</span></span></button>';
+  }).join("");
+  Array.prototype.forEach.call(document.querySelectorAll("[data-move]"),function(b){
+    b.addEventListener("click",function(){openSheet(b.getAttribute("data-move"));});
+  });
+  renderLoads();
+}
+function renderLoads(){
+  var el=document.getElementById("mv-loads");
+  var byK={};
+  state.sessions.forEach(function(ses){
+    (ses.stations||[]).forEach(function(st){
+      if(st.kg==null&&st.amt==null)return;
+      (byK[st.k]=byK[st.k]||[]).push({wk:ses.wk,date:ses.date,kg:st.kg,amt:st.amt,t:st.t});
+    });
+  });
+  var keys=STATIONS.filter(function(x){return byK[x.k]&&byK[x.k].length;});
+  if(!keys.length){el.innerHTML='<div class="empty">Log a station in the Today tab &mdash; open <b>Stations &mdash; what you lifted</b> under the session form.<br>Your heaviest and most recent numbers show up here.</div>';return;}
+  el.innerHTML=keys.map(function(x){
+    var rows=byK[x.k].slice().sort(function(a,b){return a.date<b.date?1:-1;});
+    var best=rows.reduce(function(a,r){return (r.kg||0)>(a.kg||0)?r:a;},rows[0]);
+    var last=rows[0];
+    var pct=x.load&&best.kg?Math.min(100,Math.round(best.kg/raceLoad(x.k)*100)):null;
+    return '<div class="settings-row"><div class="t"><b>'+x.n+'</b><span>'+
+      (last.kg!=null?"latest "+last.kg+" kg":"latest "+(last.amt||"")+" "+x.unit)+
+      ' &middot; week '+last.wk+(pct!=null?' &middot; '+pct+'% of race load':'')+'</span></div>'+
+      '<span class="mono" style="font-weight:700;font-size:1.05rem">'+(best.kg!=null?best.kg+" kg":(best.amt||0)+" "+x.unit)+'</span></div>';
+  }).join("");
+}
+function raceLoad(k){return {push:152,pull:103,carry:24,lunge:20,wb:6}[k]||1;}
+
+var sheetKey=null;
+function openSheet(k){
+  var x=STMAP[k]; if(!x)return;
+  sheetKey=k;
+  document.getElementById("sh-title").innerHTML=x.n;
+  document.getElementById("sh-std").innerHTML=x.std;
+  document.getElementById("sh-rules").innerHTML=x.rules.map(function(r){return "<li>"+r+"</li>";}).join("");
+  document.getElementById("sh-norep").innerHTML="<b>What gets you no-repped</b>"+x.norep;
+  document.getElementById("sheet").classList.add("open");
+  document.body.style.overflow="hidden";
+}
+function closeSheet(){sheetKey=null;document.getElementById("sheet").classList.remove("open");document.body.style.overflow="";}
+Array.prototype.forEach.call(document.querySelectorAll("[data-close]"),function(b){b.addEventListener("click",closeSheet);});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&sheetKey)closeSheet();});
+
+var animT0=null, reduceMotion=false;
+try{reduceMotion=window.matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}
+function animate(now){
+  if(animT0===null)animT0=now;
+  var C=themeColors();
+  var t=reduceMotion?600:Math.max(0,now-animT0);
+  var vis=document.getElementById("v-moves").classList.contains("active");
+  if(vis){
+    Array.prototype.forEach.call(document.querySelectorAll("#mv-grid svg[data-k]"),function(svg){
+      var k=svg.getAttribute("data-k");
+      drawMove(svg,k,(t%MOVES[k].dur)/MOVES[k].dur,C);
+    });
+  }
+  if(sheetKey){
+    drawMove(document.getElementById("sh-svg"),sheetKey,(t%MOVES[sheetKey].dur)/MOVES[sheetKey].dur,C);
+  }
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+
+/* ---------- plan view ---------- */
+function renderPlan(){
+  var cur=weekOf(todayISO());
+  document.getElementById("pl-weeks").innerHTML=PROG.map(function(w){
+    var ws=weekStart(w.wk),we=addDays(ws,6);
+    var cls="wk"+(w.wk===cur?" now":"")+(w.flag==="dl"?" dl":"")+(w.flag==="ms"?" ms":"");
+    var body=DAYKEYS.filter(function(d){return w.days[d];}).map(function(d){
+      return '<div class="wkday"><div class="d">'+d+'</div><div class="l">'+w.days[d].join(" &middot; ")+'</div></div>';
+    }).join("");
+    if(w.note)body+='<div class="wkday"><div class="d" style="color:var(--flag)">Note</div><div class="l" style="color:var(--muted)">'+w.note+'</div></div>';
+    return '<details class="'+cls+'"'+(w.wk===cur?" open":"")+'>'+
+      '<summary><span class="n">Week '+w.wk+'</span><span class="dt">'+fmt(ws)+' – '+fmt(we)+'</span><span class="bd">'+w.budget+'</span></summary>'+
+      '<div class="wkbody">'+body+'</div></details>';
+  }).join("");
+}
+
+/* ---------- data io ---------- */
+var dlApi=null;
+if(typeof window.claude!=="undefined"&&window.claude&&window.claude.use){
+  window.claude.use("downloads").then(function(d){dlApi=d;}).catch(function(){});
+}
+document.getElementById("s-export").addEventListener("click",function(){
+  var json=JSON.stringify(state,null,2), name="roxlog-"+todayISO()+".json";
+  if(dlApi&&typeof dlApi.save==="function"){
+    dlApi.save({filename:name,data:json}).then(function(){toast("Backup saved");})
+      .catch(function(){toast("Save was declined");});
+    return;
+  }
+  try{
+    var blob=new Blob([json],{type:"application/json"});
+    var a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);a.download=name;
+    document.body.appendChild(a);a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},400);
+    toast("Backup downloaded");
+  }catch(e){toast("Could not save the file here");}
+});
+document.getElementById("s-import").addEventListener("click",function(){document.getElementById("s-file").click();});
+document.getElementById("s-file").addEventListener("change",function(e){
+  var f=e.target.files&&e.target.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(){
+    try{
+      var inc=JSON.parse(r.result);
+      if(!inc||!Array.isArray(inc.sessions))throw 0;
+      state=merge(state,inc);saveLocal();
+      if(gs.on&&gs.url)gsPost({action:"upsert",sessions:state.sessions.map(function(x){return x.updatedAt?x:stamp(x);})}).catch(function(){});
+      else persist([]);
+      render();toast("Imported "+inc.sessions.length+" sessions");
+    }catch(err){toast("That file could not be read");}
+  };
+  r.readAsText(f);e.target.value="";
+});
+document.getElementById("s-wipe").addEventListener("click",function(){
+  if(state.sessions.length&&!window.confirm("Erase all "+state.sessions.length+" logged sessions? This cannot be undone."))return;
+  var ids=state.sessions.map(function(x){return x.id;});
+  state={v:1,sessions:[]};saveLocal();
+  if(gs.on&&gs.url)gsDelete(ids); else persist([]);
+  render();toast("Erased");
+});
+
+/* ---------- tabs ---------- */
+Array.prototype.forEach.call(document.querySelectorAll(".tabs button"),function(b){
+  b.addEventListener("click",function(){
+    Array.prototype.forEach.call(document.querySelectorAll(".tabs button"),function(x){x.setAttribute("aria-selected","false");});
+    Array.prototype.forEach.call(document.querySelectorAll(".view"),function(v){v.classList.remove("active");});
+    b.setAttribute("aria-selected","true");
+    document.getElementById("v-"+b.getAttribute("data-v")).classList.add("active");
+    window.scrollTo(0,0);
+  });
+});
+
+/* ---------- toast ---------- */
+var toastT;
+function toast(msg){
+  var t=document.getElementById("toast");
+  t.textContent=msg;t.classList.add("show");
+  clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove("show");},2200);
+}
+
+/* ---------- render ---------- */
+function render(){renderToday();renderLog();renderProgress();renderMoves();renderPlan();}
+
+buildStationRows();
+document.getElementById("f-date").value=selectedDate;
+document.getElementById("f-date").addEventListener("change",function(){selectedDate=this.value;renderToday();});
+boot();
+})();
+</script>
+</body>
+</html>
